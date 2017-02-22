@@ -101,10 +101,16 @@ typealias Position = (row: Int, col: Int)
 enum CellState {
     // ** Your Problem 2 code goes here! Replace the contents of CellState **
     //  This shell code is here so that at all times the playground compiles and runs
+    case alive
     case empty
+    case born
+    case died
     
     var isAlive: Bool {
-        return false
+        switch self {
+            case .alive, .born: return true
+            case .empty, .died: return false
+        }
     }
 }
 /*:
@@ -117,8 +123,8 @@ enum CellState {
 // A struct representing a Cell in Conway's Game of Life
 struct Cell {
     // ** Your Problem 3 code goes here! replace the following two lines **
-    var position: Position
-    var state: CellState
+    var position = (row: 0, col: 0)
+    var state = CellState.empty
 }
 /*:
  ## Problem 4:
@@ -129,28 +135,28 @@ struct Cell {
  */
 // ** Your Problem 4.1 answer goes here **
 /*
- 
+    The _ declares that we want an unnnamed parameter
  */
 /*:
  2. what is the type of the `transform` variable?
  */
 // ** Your Problem 4.2 answer goes here **
 /*
- 
+    (Int, Int) -> T
  */
 /*:
  3. what is the return type of `map2`?
  */
 // ** Your Problem 4.3 answer goes here **
 /*
- 
+    [[T]]
  */
 /*:
  4. what is `T` in this declaration?
  */
 // ** Your Problem 4.4 answer goes here **
 /*
- 
+    "T" is a placeholder type name or more specifically, a type parameter
  */
 // A function which is like the standard map function but
 // which will operate only on a two dimensional array
@@ -175,7 +181,7 @@ func map2<T>(_ rows: Int, _ cols: Int, transform: (Int, Int) -> T) -> [[T]] {
 */
 // ** Your Problem 5 comment goes here! **
 /*
- 
+    The contents represent the neighbors of a particular cell.
  */
 /*:
  ## Problem 6:
@@ -217,16 +223,22 @@ struct Grid {
     ]
     
     // ** Your Problem 6 code goes here! Change the following two lines **
-    var rows: Int = 0
-    var cols: Int = 0
+    var rows: Int = 10
+    var cols: Int = 10
     var cells: [[Cell]] = [[Cell]]()
     
     init(_ rows: Int,
          _ cols: Int,
          cellInitializer: (Int, Int) -> CellState = { _,_ in .empty } ) {
         // ** Your Problem 7 code goes here! **
+        self.rows = rows
+        self.cols = cols
+        
+        cells = [[Cell]](repeatElement([Cell](repeatElement(Cell(), count: cols)), count: rows))
         map2(rows, cols) { row, col in
             // ** Your Problem 8 code goes here! **
+            cells[row][col].position = (row, col)
+            cellInitializer(row, col)
         }
     }
 }
@@ -266,14 +278,14 @@ struct Grid {
  */
 // ** your problem 10.1 answer goes here.
 /*
- 
+    The word "of" is an argument label that should be used when calling the "neighbors" function.
  */
 /*:
  2. Explain in one sentence when you would use the word `cell` in relation to this function
  */
 // ** your problem 10.2 answer goes here.
 /*
- 
+    The word "cell" is a parameter name that should be used in the implementation of the "neighbors" function
  */
 // An extension of Grid to add a function for computing the positions
 // of the 8 neighboring cells of a given cell
@@ -283,7 +295,9 @@ extension Grid {
     func neighbors(of cell: Cell) -> [Position] {
         return Grid.offsets.map {
             // ** Your Problem 9 Code goes here! replace the following line **
-            return Position(row: $0, col: $1)
+            let offsetRow = (((cell.position.row + $0) % rows) + rows) % rows
+            let offsetCol = (((cell.position.col + $1) % cols) + cols) % cols
+            return Position(row: offsetRow, col: offsetCol)
         }
     }
 }
