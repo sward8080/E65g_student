@@ -101,10 +101,7 @@ typealias Position = (row: Int, col: Int)
 enum CellState {
     // ** Your Problem 2 code goes here! Replace the contents of CellState **
     //  This shell code is here so that at all times the playground compiles and runs
-    case alive
-    case empty
-    case born
-    case died
+    case alive, empty, born, died
     
     var isAlive: Bool {
         switch self {
@@ -238,7 +235,7 @@ struct Grid {
         map2(rows, cols) { row, col in
             // ** Your Problem 8 code goes here! **
             cells[row][col].position = (row, col)
-            cellInitializer(row, col)
+            cells[row][col].state = cellInitializer(row, col)
         }
     }
 }
@@ -309,21 +306,21 @@ extension Grid {
  */
 // ** Your Problem 11.1 answer goes here **
 /*
- 
+    The combine argument appears to tally some value for each unique row/column combination.
  */
 /*:
  2. what is the return type of reduce2?
  */
 // ** Your Problem 11.2 answer goes here **
 /*
- 
+    Int
  */
 /*:
  3. why is there no T parameter here as in map2 above?
  */
 // ** Your Problem 11.3 answer goes here **
 /*
- 
+    The "reduce" function combines Array elements using the given closure. The result of this combination would be of the same type as the Array elements being combined.
  */
 
 // A function which is useful for counting things in an array of arrays of things
@@ -349,7 +346,7 @@ extension Grid {
     var numLiving: Int {
         return reduce2(self.rows, self.cols) { total, row, col in
             // ** Replace the following line with your Problem 12 code
-            return 0
+            return cells[row][col].state == .alive ? total + 1 : total
         }
     }
 }
@@ -381,15 +378,15 @@ extension Grid {
 // Code to initialize a 10x10 grid, set up every cell in the grid
 // and randomly turn each cell on or off.  Uncomment following 4 lines
 // and replace `.empty` with your one line of code
-//var grid = Grid(10, 10) { row, col in 
+var grid = Grid(10, 10) { row, col in 
 //   // ** Your Problem 13 code goes here! **
-//   .empty
-//}
-//grid.numLiving
+    arc4random_uniform(3) == 2 ? .alive : .empty
+}
+grid.numLiving
 
 // ** Your Problem 13 comment goes here! **
 /*
- 
+    The arc4random_uniform() function returns a uniformly distributed random number less than the upper bound (3 in this case). With only 0, 1, and 2 as possible values, this would mean that the possibility of the random value equaling 2 is about 33%.
  */
 /*:
  ## Problem 14:
