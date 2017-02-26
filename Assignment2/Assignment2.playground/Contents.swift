@@ -441,16 +441,15 @@ extension Grid {
  */
 // Problem 15.2 answer goes here
 /*
-    "self[row][col]" is of type "Position"
+    "self[row][col]" is of type "Grid"
  */
 /*:
  3. why those two types are different?
  */
 // Problem 15.3 comment goes here
 /*
-    The "cell" paramater references a particular "Cell" object instance for which we want to find the neighbors which are living.
-    As for "self[row,col]", this references the array of "Position" tuples with variable name "offsets" defined in the "Grid" struct.
-    We need to get each neighboring cell in order to count the number of "living" neighbors using the "reduce" function as defined below.
+    The "cell" parameter references a particular "Cell" object instance for which we want to find the neighbors which are living while
+    "self[row][col]" is a subscript shortcut acting on "self" which is of type "Grid".
  */
 /*:
  4. under what circumstances will the `else` clause will be executed?
@@ -458,8 +457,7 @@ extension Grid {
 // Problem 15.4 comment goes here
 /*
     The else clause will be executed if the "neighbors(of:)" function call on the referenced "cell" object returns an array of length 0
-    or if the "Grid" struct has been initialized with the values of "rows" and "cols" equal to 0. It will also be executed if the
-    "livingNeighbors(of:)" function is called on an instance of "Cell" which does not exist.
+    or nil.
  */
 /*:
  ## Problem 16:
@@ -472,7 +470,7 @@ extension Grid {
 // Problem 16 comment goes here
 /*
     The "reduce" function returns an Int value representing the number of living neighbors of the "cell" on which it is called. If the "cell"
-    instance either does not exist or has no neighbors, the "reduce" function will return the value 0.
+    instance either does not exist, has no living neighbors or no neighbors at all, the "reduce" function will return the value 0.
  */
 
 /*:
@@ -488,7 +486,7 @@ extension Grid {
 
 // Problem 17 comment goes here
 /*
- 
+    The "$1" shorthand argument name references each element of the array of type "Position" returned by the "neighbors(of:) function call.
  */
 
 /*:
