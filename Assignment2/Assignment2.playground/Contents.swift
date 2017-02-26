@@ -228,14 +228,14 @@ struct Grid {
          _ cols: Int,
          cellInitializer: (Int, Int) -> CellState = { _,_ in .empty } ) {
         // ** Your Problem 7 code goes here! **
-        self.rows = rows
-        self.cols = cols
+            self.rows = rows
+            self.cols = cols
         
-        cells = [[Cell]](repeatElement([Cell](repeatElement(Cell(), count: cols)), count: rows))
-        map2(rows, cols) { row, col in
+            cells = [[Cell]](repeatElement([Cell](repeatElement(Cell(), count: cols)), count: rows))
+            map2(rows, cols) { row, col in
             // ** Your Problem 8 code goes here! **
-            cells[row][col].position = (row, col)
-            cells[row][col].state = cellInitializer(row, col)
+                cells[row][col].position = (row, col)
+                cells[row][col].state = cellInitializer(row, col)
         }
     }
 }
@@ -412,11 +412,16 @@ extension Grid {
     subscript (row: Int, col: Int) -> Cell? {
         get {
             // ** Your Problem 14 `get` code goes here! replace the following line **
+            guard (row < 0 || row > rows || col < 0 || col > cols) else {
+                return cells[row][col]
+            }
             return nil
         }
         set {
             // ** Your Problem 14 `set` code goes here! replace the following line **
-            return
+            guard newValue == nil, (row < 0 || row > rows || col < 0 || col > cols) else {
+                return cells[row][col] = newValue!
+            }
         }
     }
 }
@@ -429,28 +434,32 @@ extension Grid {
  */
 // Problem 15.1 answer goes here
 /*
- 
+    The parameter "cell" is of type "Cell".
  */
 /*:
  2. what the type of `self[row,col]`?
  */
 // Problem 15.2 answer goes here
 /*
- 
+    "self[row][col]" is of type "Position"
  */
 /*:
  3. why those two types are different?
  */
 // Problem 15.3 comment goes here
 /*
- 
+    The "cell" paramater references a particular "Cell" object instance for which we want to find the neighbors which are living.
+    As for "self[row,col]", this references the array of "Position" tuples with variable name "offsets" defined in the "Grid" struct.
+    We need to get each neighboring cell in order to count the number of "living" neighbors using the "reduce" function as defined below.
  */
 /*:
  4. under what circumstances will the `else` clause will be executed?
  */
 // Problem 15.4 comment goes here
 /*
- 
+    The else clause will be executed if the "neighbors(of:)" function call on the referenced "cell" object returns an array of length 0
+    or if the "Grid" struct has been initialized with the values of "rows" and "cols" equal to 0. It will also be executed if the
+    "livingNeighbors(of:)" function is called on an instance of "Cell" which does not exist.
  */
 /*:
  ## Problem 16:
@@ -462,7 +471,8 @@ extension Grid {
 
 // Problem 16 comment goes here
 /*
- 
+    The "reduce" function returns an Int value representing the number of living neighbors of the "cell" on which it is called. If the "cell"
+    instance either does not exist or has no neighbors, the "reduce" function will return the value 0.
  */
 
 /*:
