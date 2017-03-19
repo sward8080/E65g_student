@@ -228,11 +228,21 @@ struct Grid {
          _ cols: Int,
          cellInitializer: (Int, Int) -> CellState = { _,_ in .empty } ) {
         // ** Your Problem 7 code goes here! **
+<<<<<<< HEAD
             self.rows = rows
             self.cols = cols
         
             cells = [[Cell]](repeatElement([Cell](repeatElement(Cell(), count: cols)), count: rows))
             map2(rows, cols) { row, col in
+||||||| merged common ancestors
+        map2(rows, cols) { row, col in
+=======
+        self.rows = rows
+        self.cols = cols
+        cells = [[Cell]](repeatElement([Cell](repeatElement(Cell(position:(0,0), state: .empty), count: cols)), count: rows))
+        
+        map2(rows, cols) { row, col in
+>>>>>>> c7c60c48a07da71cfd9c9b5210400a1cce4ecef1
             // ** Your Problem 8 code goes here! **
                 cells[row][col].position = (row, col)
                 cells[row][col].state = cellInitializer(row, col)
