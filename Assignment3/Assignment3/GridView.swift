@@ -156,7 +156,7 @@ import UIKit
     }
     
     // Iterate grid
-    func stepPressed() {
+    func stepPressedNextGrid() {
         grid = grid.next()
         setNeedsDisplay()
     }
