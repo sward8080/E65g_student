@@ -1,8 +1,8 @@
 //
 //  GridView.swift
-//  Assignment3
+//  Assignment4
 //
-//  Created by Sean Ward on 3/19/17.
+//  Created by Sean Ward on 4/9/17.
 //  Copyright © 2017 Harvard Division of Continuing Education. All rights reserved.
 //
 
@@ -18,20 +18,15 @@ import UIKit
         // Drawing code
     }
     */
-    var grid = Grid(0,0)
-    @IBInspectable var size: Int = 20 {
-        willSet(gridSize) {
-            grid = Grid(size, size)
-        }
-    }
     
+    @IBInspectable var size: Int = 20
     @IBInspectable var livingColor: UIColor = UIColor.yellow
     @IBInspectable var emptyColor: UIColor = UIColor.white
     @IBInspectable var bornColor: UIColor = UIColor.green
     @IBInspectable var diedColor: UIColor = UIColor.black
     @IBInspectable var gridColor: UIColor = UIColor.purple
-
     @IBInspectable var gridWidth: CGFloat = 4.0
+    var engine: StandardEngine!
     
     override func draw(_ rect: CGRect) {
         let base = rect.origin
@@ -48,17 +43,21 @@ import UIKit
         (0 ..< size).forEach { i in
             (0 ..< size).forEach { j in
                 let origin = CGPoint(
-                    x: base.x + (CGFloat(i) * cellSize.width),
-                    y: base.y + (CGFloat(j) * cellSize.height)
+                    x: base.x + (CGFloat(i) * cellSize.width) + 2.0,
+                    y: base.y + (CGFloat(j) * cellSize.height) + 2.0
+                )
+                let circleSize = CGSize(
+                    width: cellSize.width - 4.0,
+                    height: cellSize.height - 4.0
                 )
                 
                 // Define subretangles for
                 let subRect = CGRect(
                     origin: origin,
-                    size: cellSize
+                    size: circleSize
                 )
                 let cellPath = UIBezierPath(ovalIn: subRect)
-                switch grid[row: i, col: j] {
+                switch engine.grid[i, j] {
                 case .alive: livingColor.setFill()
                 case .empty: emptyColor.setFill()
                 case .born: bornColor.setFill()
@@ -124,9 +123,9 @@ import UIKit
         cellLastTouched = nil
     }
     
-    var cellLastTouched: Position?
-    func process(touches: Set<UITouch>) -> Position? {
-        
+    var cellLastTouched: GridPosition?
+    func process(touches: Set<UITouch>) -> GridPosition? {
+
         // If multitouch, return nil
         guard touches.count == 1 else { return nil }
         let pos = convert(touch: touches.first!)
@@ -136,15 +135,21 @@ import UIKit
             || cellLastTouched?.col != pos.col
             else { return pos }
         
-        // Toggle cellState of cell touched
-        let currentCell = grid[(pos.col, pos.row)]
-        //grid[(pos.col, pos.row)] = grid[(pos.col, pos.row)].toggle(value: currentCell)
-        setNeedsDisplay()
+//         Toggle cellState of cell touched
+        engine.grid[(pos.col, pos.row)] =
+            engine.grid[(pos.col, pos.row)].isAlive ? .empty : .alive
+        engine.delegate?.engineDidUpdate(withGrid: engine.grid)
+        let nc = NotificationCenter.default
+        let name = Notification.Name(rawValue: "EngineUpdate")
+        let n = Notification(name: name,
+                             object: nil,
+                             userInfo: ["engine" : self])
+        nc.post(n)
         return pos
     }
     
     // Convert UITouch object to valid cell position
-    func convert(touch: UITouch) -> Position {
+    func convert(touch: UITouch) -> GridPosition {
         let touchY = Int(touch.location(in: self).y)
         let gridHeight = Int(frame.size.height)
         let row = touchY / (gridHeight / size)
@@ -153,12 +158,6 @@ import UIKit
         let col = touchX / (gridWidth / size)
         let position = (row, col)
         return position
-    }
-    
-    // Iterate grid
-    func stepPressedNextGrid() {
-        grid = grid.next()
-        setNeedsDisplay()
     }
 
 }
