@@ -23,7 +23,6 @@ class InstrumentationViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         gridSizeStepper.value = Double(engine.grid.size.cols)
         gridSizeText.text = "\(Int(engine.grid.size.cols))"
         rate.text = "\(refreshSlider.value) Hz"
@@ -31,7 +30,6 @@ class InstrumentationViewController: UIViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     @IBAction func editingBegan(_ sender: UITextField) {
@@ -88,15 +86,18 @@ class InstrumentationViewController: UIViewController {
     @IBAction func toggle(_ sender: UISwitch) {
         if (sender.isOn) {
             refreshSlider.isEnabled = true
-            if valInHZ < 0.1 {
-                refreshSlider.value = 5.0
-                engine.refreshRate = 1 / 5.0
+            if valInHZ < Double(refreshSlider.minimumValue) {
+                refreshSlider.value = 1.0
+                engine.refreshRate = 1
             }
-            print("toggled. if sender.isOn: \(valInHZ)")
+            engine.refreshIsOn = true
         } else {
             refreshSlider.isEnabled = false
-            engine.refreshRate = 0.0
-            print("toggled. if sender.isOff: \(valInHZ)")
+            if engine.refreshTimer != nil {
+                engine.refreshTimer?.invalidate()
+                engine.refreshTimer = nil
+            }
+            engine.refreshIsOn = false
         }
     }
     

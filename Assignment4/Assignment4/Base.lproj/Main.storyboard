@@ -44,7 +44,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="5" minValue="0.10000000000000001" maxValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="eWs-v5-IvJ" userLabel="Refresh Rate">
+                            <slider opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.10000000000000001" maxValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="eWs-v5-IvJ" userLabel="Refresh Rate">
                                 <rect key="frame" x="39.333333333333343" y="426.66666666666669" width="335.33333333333337" height="31"/>
                                 <connections>
                                     <action selector="refreshChanged:" destination="9pv-A4-QxB" eventType="valueChanged" id="K6n-gF-fZx"/>

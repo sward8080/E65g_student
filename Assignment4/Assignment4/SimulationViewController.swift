@@ -55,7 +55,10 @@ class SimulationViewController: UIViewController, EngineDelegate {
     }
     
     @IBAction func start(_ sender: UIButton) {
-        if !engine.refreshIsOn { engine.refreshIsOn = true }
+        if engine.refreshTimer != nil {
+            engine.refreshTimer?.invalidate()
+            engine.refreshTimer = nil
+        }
         if (engine.refreshRate > 0.0 && engine.refreshIsOn) {
             engine.refreshTimer = Timer.scheduledTimer(
                 withTimeInterval: engine.refreshRate,
