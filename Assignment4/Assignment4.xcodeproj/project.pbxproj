@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		29303A501E9AF37F00C5494B /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29303A4F1E9AF37F00C5494B /* GridView.swift */; };
+		2943B3BF1EA1D9F70073C547 /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2943B3BE1EA1D9F70073C547 /* StatisticsViewController.swift */; };
+		2943B3C31EA1E2750073C547 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2943B3C21EA1E2750073C547 /* StatisticsView.swift */; };
 		FB475A381E8828EF00D2EAD3 /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB475A371E8828EF00D2EAD3 /* Grid.swift */; };
 		FBAD2E071E2BE38C008207C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBAD2E061E2BE38C008207C0 /* AppDelegate.swift */; };
 		FBAD2E091E2BE38C008207C0 /* InstrumentationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBAD2E081E2BE38C008207C0 /* InstrumentationViewController.swift */; };
@@ -19,6 +21,8 @@
 
 /* Begin PBXFileReference section */
 		29303A4F1E9AF37F00C5494B /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
+		2943B3BE1EA1D9F70073C547 /* StatisticsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatisticsViewController.swift; sourceTree = "<group>"; };
+		2943B3C21EA1E2750073C547 /* StatisticsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		FB475A371E8828EF00D2EAD3 /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
 		FBAD2E031E2BE38C008207C0 /* Assignment4.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Assignment4.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBAD2E061E2BE38C008207C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +70,8 @@
 				FBAD2E081E2BE38C008207C0 /* InstrumentationViewController.swift */,
 				FBAD2E0A1E2BE38C008207C0 /* SimulationViewController.swift */,
 				FBAD2E0C1E2BE38C008207C0 /* Main.storyboard */,
+				2943B3C21EA1E2750073C547 /* StatisticsView.swift */,
+				2943B3BE1EA1D9F70073C547 /* StatisticsViewController.swift */,
 				FBAD2E0F1E2BE38C008207C0 /* Assets.xcassets */,
 				FBAD2E111E2BE38C008207C0 /* LaunchScreen.storyboard */,
 				FBAD2E141E2BE38C008207C0 /* Info.plist */,
@@ -149,6 +155,8 @@
 				FBAD2E0B1E2BE38C008207C0 /* SimulationViewController.swift in Sources */,
 				FBAD2E071E2BE38C008207C0 /* AppDelegate.swift in Sources */,
 				FBAD2E091E2BE38C008207C0 /* InstrumentationViewController.swift in Sources */,
+				2943B3C31EA1E2750073C547 /* StatisticsView.swift in Sources */,
+				2943B3BF1EA1D9F70073C547 /* StatisticsViewController.swift in Sources */,
 				29303A501E9AF37F00C5494B /* GridView.swift in Sources */,
 				FB475A381E8828EF00D2EAD3 /* Grid.swift in Sources */,
 			);

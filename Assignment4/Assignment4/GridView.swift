@@ -10,25 +10,21 @@ import UIKit
 
 @IBDesignable class GridView: UIView {
     
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
-    
-    @IBInspectable var size: Int = 20
+    @IBInspectable var size: Int = 4
     @IBInspectable var livingColor: UIColor = UIColor.yellow
     @IBInspectable var emptyColor: UIColor = UIColor.white
     @IBInspectable var bornColor: UIColor = UIColor.green
     @IBInspectable var diedColor: UIColor = UIColor.black
     @IBInspectable var gridColor: UIColor = UIColor.purple
     @IBInspectable var gridWidth: CGFloat = 4.0
-    var engine: StandardEngine!
+    
+    let nc = NotificationCenter.default
+    let name = Notification.Name(rawValue: "EngineUpdate")
+    
+    var engine: StandardEngine = StandardEngine.engine
     
     override func draw(_ rect: CGRect) {
+        size = engine.grid.size.rows
         let base = rect.origin
         let viewWidth = rect.size.width
         let viewHeight = rect.size.height
@@ -135,15 +131,17 @@ import UIKit
             || cellLastTouched?.col != pos.col
             else { return pos }
         
+        // Prevent touches from wrapping around grid
+        guard pos.row < size && pos.col < size &&
+            pos.row >= 0 && pos.col >= 0 else { return pos }
+        
 //         Toggle cellState of cell touched
         engine.grid[(pos.col, pos.row)] =
             engine.grid[(pos.col, pos.row)].isAlive ? .empty : .alive
         engine.delegate?.engineDidUpdate(withGrid: engine.grid)
-        let nc = NotificationCenter.default
-        let name = Notification.Name(rawValue: "EngineUpdate")
         let n = Notification(name: name,
                              object: nil,
-                             userInfo: ["engine" : self])
+                             userInfo: ["engine" : engine])
         nc.post(n)
         return pos
     }

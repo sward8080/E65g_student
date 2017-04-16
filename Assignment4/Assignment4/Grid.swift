@@ -49,37 +49,47 @@ public protocol EngineProtocol {
 
 public class StandardEngine: EngineProtocol {
     
+    // Create Singleton Instance
     static let engine = StandardEngine(10, 10)
     
     public var delegate: EngineDelegate?
-    public var grid: GridProtocol
-    public var refreshRate: Double = 0.0 {
+    public var grid: GridProtocol {
         didSet {
-            if refreshRate > 0.0 {
-                refreshTimer = Timer.scheduledTimer(
-                    withTimeInterval: refreshRate,
-                    repeats: true
-                ) { (t: Timer) in
-                    self.step()
-                }
-            } else {
-                refreshTimer?.invalidate()
-                refreshTimer = nil
-            }
+            guard  (rows != grid.size.rows) else { return }
+            rows = grid.size.rows
+            cols = grid.size.cols
         }
     }
     
+    public var refreshIsOn : Bool = false
     public var refreshTimer: Timer?
+    public var refreshRate: Double = 0.0
     
     public var rows: Int = 10
-    
     public var cols: Int = 10
+    public var numAlive: Int = 0
+    public var numEmpty: Int = 0
+    public var numBorn: Int = 0
+    public var numDied: Int = 0
     
-    public required init(_ rows: Int, _ cols: Int) {
-        self.rows = rows
-        self.cols = cols
-        self.grid = Grid(rows, cols)
-        delegate?.engineDidUpdate(withGrid: grid)
+    public func resetStateCount() {
+        numAlive = 0
+        numEmpty = 0
+        numBorn = 0
+        numDied = 0
+    }
+    
+    public func countGridStates() {
+        (0 ..< rows).forEach { i in
+            (0 ..< cols).forEach { j in
+                switch grid[i, j] {
+                case .alive: numAlive = numAlive + 1
+                case .empty: numEmpty = numEmpty + 1
+                case .born: numBorn = numBorn + 1
+                case .died: numDied = numDied + 1
+                }
+            }
+        }
     }
     
     public func step() -> GridProtocol {
@@ -90,8 +100,23 @@ public class StandardEngine: EngineProtocol {
         let n = Notification(name: name,
                              object: nil,
                              userInfo: ["engine" : self])
+        countGridStates()
         nc.post(n)
         return grid
+    }
+    
+    public required init(_ rows: Int, _ cols: Int) {
+        self.rows = rows
+        self.cols = cols
+        self.grid = Grid(rows, cols)
+        delegate?.engineDidUpdate(withGrid: grid)
+        let nc = NotificationCenter.default
+        let name = Notification.Name(rawValue: "EngineUpdate")
+        let n = Notification(name: name,
+                             object: nil,
+                             userInfo: ["engine" : self])
+        countGridStates()
+        nc.post(n)
     }
 }
 
