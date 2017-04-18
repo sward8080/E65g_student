@@ -135,7 +135,7 @@ import UIKit
         guard pos.row < size && pos.col < size &&
             pos.row >= 0 && pos.col >= 0 else { return pos }
         
-//         Toggle cellState of cell touched
+        // Toggle cellState of cell touched
         engine.grid[(pos.col, pos.row)] =
             engine.grid[(pos.col, pos.row)].isAlive ? .empty : .alive
         engine.delegate?.engineDidUpdate(withGrid: engine.grid)

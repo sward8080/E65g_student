@@ -22,6 +22,8 @@ class StatisticsViewController: UIViewController {
     var engine : StandardEngine = StandardEngine.engine
     
     override func viewDidLoad() {
+        
+        // Update value of cellStates displayed on first load
         super.viewDidLoad()
         setFields()
         

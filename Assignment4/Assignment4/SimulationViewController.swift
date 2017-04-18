@@ -40,11 +40,13 @@ class SimulationViewController: UIViewController, EngineDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    // Delegate function
     func engineDidUpdate(withGrid: GridProtocol) {
         gridView.size = withGrid.size.rows
         self.gridView.setNeedsDisplay()
     }
     
+    // Get next iteration of grid when "step" button tapped
     @IBAction func stepTapped(_ sender: UIButton) {
         engine.grid = engine.step()
         let n = Notification(name: name,
@@ -54,6 +56,7 @@ class SimulationViewController: UIViewController, EngineDelegate {
         nc.post(n)
     }
     
+    // Start refresh of grid based on user provided refresh rate
     @IBAction func start(_ sender: UIButton) {
         if engine.refreshTimer != nil {
             engine.refreshTimer?.invalidate()
@@ -72,16 +75,11 @@ class SimulationViewController: UIViewController, EngineDelegate {
         }
     }
     
+    // Stop grid refresh. Invalidate timer
     @IBAction func stop(_ sender: UIButton) {
         if engine.refreshTimer != nil {
             engine.refreshTimer?.invalidate()
             engine.refreshTimer = nil
         }
-    }
-    
-    
-    public subscript (row: Int, col: Int) -> CellState {
-        get { return engine.grid[row,col] }
-        set { engine.grid[row,col] = newValue }
     }
 }

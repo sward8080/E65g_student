@@ -8,7 +8,7 @@
 
 import UIKit
 
-class InstrumentationViewController: UIViewController {
+class InstrumentationViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var gridSizeStepper: UIStepper!
     @IBOutlet weak var gridSizeText: UITextField!
@@ -26,6 +26,8 @@ class InstrumentationViewController: UIViewController {
         gridSizeStepper.value = Double(engine.grid.size.cols)
         gridSizeText.text = "\(Int(engine.grid.size.cols))"
         rate.text = "\(refreshSlider.value) Hz"
+        gridSizeText.delegate = self
+        addDoneButtonToKeyboard()
     }
 
     override func didReceiveMemoryWarning() {
@@ -39,12 +41,12 @@ class InstrumentationViewController: UIViewController {
     @IBAction func editingChanged(_ sender: UITextField) {
     }
     
-    
+    // Check for numeric entry in text field. Borrowed from Van's code in lecture 9
     @IBAction func editingEnded(_ sender: UITextField) {
         guard let text = sender.text else { return }
         guard let val = Int(text) else {
             showErrorAlert(withMessage: "Invalid Value: \(text), Please Try Again.") {
-                sender.text = "\(self.engine.grid.size)"
+                sender.text = "\(self.engine.grid.size.rows)"
             }
             return
         }
@@ -55,7 +57,31 @@ class InstrumentationViewController: UIViewController {
                              userInfo: ["engine" : engine])
         nc.post(n)
     }
-
+    
+    // Create "Done" button and toolbar for number pad keyboard
+    func addDoneButtonToKeyboard() {
+        let toolbarFrame = CGRect(x: 0, y: 0, width: 320, height: 50)
+        let doneToolbar: UIToolbar = UIToolbar(frame: toolbarFrame)
+        doneToolbar.barStyle = UIBarStyle.default
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let done: UIBarButtonItem  = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.done, target: self, action: #selector(InstrumentationViewController.doneButtonAction))
+        
+        var items = [UIBarButtonItem]()
+        items.append(flexSpace)
+        items.append(done)
+        
+        doneToolbar.items = items
+        doneToolbar.sizeToFit()
+        
+        self.gridSizeText.inputAccessoryView = doneToolbar
+    }
+    
+    // Close keyboard on "Done"
+    func doneButtonAction() {
+        gridSizeText.resignFirstResponder()
+    }
+    
+    // Increase grid size by multiples of 10
     @IBAction func stepGridSize(_ sender: UIStepper) {
         let newGridSize = Int(sender.value)
         gridSizeText.text = "\(newGridSize)"
@@ -66,13 +92,15 @@ class InstrumentationViewController: UIViewController {
                              userInfo: ["engine" : engine])
         nc.post(n)
     }
-
+    
+    // Modify text field value on refresh rate slider change
     @IBAction func refreshChanged(_ sender: UISlider) {
         let num = round( Double(sender.value) * 10.0) / 10.0
         print("refresh changed sender value: \(num)")
         rate.text = "\(num) Hz"
     }
     
+    // Set refresh rate
     @IBAction func refreshUpInside(_ sender: UISlider) {
         valInHZ = round( Double(sender.value) * 10.0) / 10.0
         print("refresh up inside: \(valInHZ)")
@@ -83,6 +111,7 @@ class InstrumentationViewController: UIViewController {
         engine.refreshRate = 1 / valInHZ
     }
     
+    // Toggle timer refresh on/off
     @IBAction func toggle(_ sender: UISwitch) {
         if (sender.isOn) {
             refreshSlider.isEnabled = true
