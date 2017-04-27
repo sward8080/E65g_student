@@ -211,6 +211,13 @@ public class StandardEngine: EngineProtocol {
         }
     }
     
+    public func setPoints( _ points: [( Int, Int, CellState )] ) {
+        grid = Grid(rows, cols)
+        for (row, col, state) in points {
+            grid[row, col] = state
+        }
+    }
+    
     public func step() -> GridProtocol {
         self.grid = grid.next()
         delegate?.engineDidUpdate(withGrid: grid)

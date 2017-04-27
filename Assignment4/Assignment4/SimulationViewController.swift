@@ -20,9 +20,11 @@ class SimulationViewController: UIViewController, EngineDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         engine = StandardEngine.engine
         engine.delegate = self
+        if gridView.points != nil {
+            engine.setPoints(gridView.points!)
+        }
         gridView.setNeedsDisplay()
         nc.addObserver(
             forName: name,

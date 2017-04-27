@@ -8,30 +8,106 @@
 
 import UIKit
 
-class InstrumentationViewController: UIViewController, UITextFieldDelegate {
+class InstrumentationViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
-    @IBOutlet weak var gridSizeStepper: UIStepper!
-    @IBOutlet weak var gridSizeText: UITextField!
-    @IBOutlet weak var rate: UILabel!
-    @IBOutlet weak var refreshSlider: UISlider!
+    @IBOutlet weak var rowsLabel: UILabel!
+    @IBOutlet weak var rowsSlider: UISlider!
+    @IBOutlet weak var colsLabel: UILabel!
+    @IBOutlet weak var colsSlider: UISlider!
+    @IBOutlet weak var refreshTextField: UITextField!
     @IBOutlet weak var toggleSwitch: UISwitch!
+    @IBOutlet weak var tableView: UITableView!
     
     var engine : StandardEngine = StandardEngine.engine
     let nc = NotificationCenter.default
     let name = Notification.Name(rawValue: "EngineUpdate")
     var valInHZ = 0.0
+    let classURL = URL(string: "https://dl.dropboxusercontent.com/u/7544475/S65g.json")!
+    var configurations : [Any]!
+    
+//    let data : [[String]] = [ ["Chair", "Bucket", "Truck", "Rock"],
+//                              ["Asphalt", "Tile", "Car", "Blue", "White", "Pole"],
+//                              ["Pole", "Computer"]
+//    ]
+    
+    // ---------------------------------------------------------------------------------
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        gridSizeStepper.value = Double(engine.grid.size.cols)
-        gridSizeText.text = "\(Int(engine.grid.size.cols))"
-        rate.text = "\(refreshSlider.value) Hz"
-        gridSizeText.delegate = self
+        getData(url: classURL) { items in
+            self.configurations = items
+        }
+        print("configurations count: \(configurations)")
+        rowsLabel.text = "Rows: \(Int(engine.grid.size.rows))"
+        colsLabel.text = "Columns: \(Int(engine.grid.size.cols))"
+        refreshTextField.text = "1 Hz"
         addDoneButtonToKeyboard()
     }
-
+    
+    func parseData(data: [Any]) -> Void {
+        for pattern in data {
+            let jsonDictionary = pattern as! [String : Any]
+            let config = Config(json: jsonDictionary)
+        }
+    }
+    
+    typealias GetDataCompletionHandler = (_ patterns : [Any]) -> ()
+    func getData(url: URL, completion: @escaping (_ patterns : [Any]) -> ()) {
+        Fetcher().fetchJSON(url: url) { (json: Any?, message: String?) in
+            guard message == nil else {
+                print(message ?? "nil")
+                return
+            }
+            guard let json = json else {
+                print("no json")
+                return
+            }
+            let array = json as! [Any]
+            completion(array)
+//            OperationQueue.main.addOperation {
+//                print("in fetchJSON closure")
+//                if let array = json as? [Any] {
+//                    print(array)
+//                    completion(array)
+//                }
+//            }
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+//        navigationController?.isNavigationBarHidden = true
+    }
+    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        let cellSelected = tableView.indexPathForSelectedRow
+//        if let cellSelected = cellSelected {
+//            
+//        }
+//    }
+    
+    @IBAction func addRow(_ sender: UIButton) {
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        print("in num of sections")
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return configurations.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let identifier = "basic"
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+        let label = cell.contentView.subviews.first as! UILabel
+        let jsonDictionary = configurations[indexPath.item] as! [String : Any ]
+        label.text = jsonDictionary["title"] as? String
+        return cell
     }
     
     @IBAction func editingBegan(_ sender: UITextField) {
@@ -39,10 +115,19 @@ class InstrumentationViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func editingChanged(_ sender: UITextField) {
+        print("editing changed")
+    }
+    
+    @IBAction func gridSizeChanged(_ sender: UISlider) {
+        
+    }
+    @IBAction func gridSizeUpInside(_ sender: UISlider) {
+        
     }
     
     // Check for numeric entry in text field. Borrowed from Van's code in lecture 9
     @IBAction func editingEnded(_ sender: UITextField) {
+        print("editing ended")
         guard let text = sender.text else { return }
         guard let val = Int(text) else {
             showErrorAlert(withMessage: "Invalid Value: \(text), Please Try Again.") {
@@ -73,31 +158,30 @@ class InstrumentationViewController: UIViewController, UITextFieldDelegate {
         doneToolbar.items = items
         doneToolbar.sizeToFit()
         
-        self.gridSizeText.inputAccessoryView = doneToolbar
+        self.refreshTextField.inputAccessoryView = doneToolbar
     }
     
     // Close keyboard on "Done"
     func doneButtonAction() {
-        gridSizeText.resignFirstResponder()
+        refreshTextField.resignFirstResponder()
     }
     
     // Increase grid size by multiples of 10
-    @IBAction func stepGridSize(_ sender: UIStepper) {
-        let newGridSize = Int(sender.value)
-        gridSizeText.text = "\(newGridSize)"
-        engine.grid = Grid(newGridSize, newGridSize)
-        engine.delegate?.engineDidUpdate(withGrid: engine.grid)
-        let n = Notification(name: name,
-                             object: nil,
-                             userInfo: ["engine" : engine])
-        nc.post(n)
-    }
+//    @IBAction func stepGridSize(_ sender: UIStepper) {
+//        let newGridSize = Int(sender.value)
+//        gridSizeText.text = "\(newGridSize)"
+//        engine.grid = Grid(newGridSize, newGridSize)
+//        engine.delegate?.engineDidUpdate(withGrid: engine.grid)
+//        let n = Notification(name: name,
+//                             object: nil,
+//                             userInfo: ["engine" : engine])
+//        nc.post(n)
+//    }
     
     // Modify text field value on refresh rate slider change
     @IBAction func refreshChanged(_ sender: UISlider) {
         let num = round( Double(sender.value) * 10.0) / 10.0
-        print("refresh changed sender value: \(num)")
-        rate.text = "\(num) Hz"
+        refreshTextField.text = "\(num) Hz"
     }
     
     // Set refresh rate
@@ -114,14 +198,15 @@ class InstrumentationViewController: UIViewController, UITextFieldDelegate {
     // Toggle timer refresh on/off
     @IBAction func toggle(_ sender: UISwitch) {
         if (sender.isOn) {
-            refreshSlider.isEnabled = true
-            if valInHZ < Double(refreshSlider.minimumValue) {
-                refreshSlider.value = 1.0
+            refreshTextField.isEnabled = true
+//            if valInHZ < Double(refreshSlider.minimumValue) {
+            if valInHZ < 1.0 {
+                refreshTextField.text = "1.0"
                 engine.refreshRate = 1
             }
             engine.refreshIsOn = true
         } else {
-            refreshSlider.isEnabled = false
+            refreshTextField.isEnabled = false
             if engine.refreshTimer != nil {
                 engine.refreshTimer?.invalidate()
                 engine.refreshTimer = nil
