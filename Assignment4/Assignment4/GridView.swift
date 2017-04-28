@@ -23,8 +23,6 @@ import UIKit
     
     var engine: StandardEngine = StandardEngine.engine
     
-    var points: [(Int,Int,CellState)]?
-    
     override func draw(_ rect: CGRect) {
         size = engine.grid.size.rows
         let base = rect.origin

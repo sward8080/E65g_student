@@ -22,9 +22,6 @@ class SimulationViewController: UIViewController, EngineDelegate {
         super.viewDidLoad()
         engine = StandardEngine.engine
         engine.delegate = self
-        if gridView.points != nil {
-            engine.setPoints(gridView.points!)
-        }
         gridView.setNeedsDisplay()
         nc.addObserver(
             forName: name,

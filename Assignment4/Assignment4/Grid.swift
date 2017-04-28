@@ -171,7 +171,8 @@ public class StandardEngine: EngineProtocol {
     public var delegate: EngineDelegate?
     public var grid: GridProtocol {
         didSet {
-            guard  (rows != grid.size.rows) else { return }
+            guard  (rows != grid.size.rows),
+                    (cols != grid.size.cols) else { return }
             rows = grid.size.rows
             cols = grid.size.cols
         }
