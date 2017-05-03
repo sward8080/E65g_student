@@ -20,7 +20,7 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     
     var engine : StandardEngine = StandardEngine.engine
     let nc = NotificationCenter.default
-    let name = Notification.Name(rawValue: "EngineUpdate")
+    let engineUpdate = Notification.Name(rawValue: "EngineUpdate")
     var refreshTimeInSeconds = 0.0
     let classURL = URL(string: "https://dl.dropboxusercontent.com/u/7544475/S65g.json")!
     var configurations : [Any]!
@@ -39,6 +39,15 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         colsLabel.text = "Columns: \(Int(engine.grid.size.cols))"
         refreshTextField.text = "1 Hz"
         addDoneButtonToKeyboard()
+        nc.addObserver(
+            forName: engineUpdate,
+            object: nil,
+            queue: nil) { (n) in
+                guard let update = n.userInfo!["grid"] else { return }
+                let savedEditorGrid = update as! GridProtocol
+                self.engine.grid = savedEditorGrid
+                self.engine.delegate?.engineDidUpdate(withGrid: savedEditorGrid)
+        }
     }
     
     typealias GetJSONCompletionHandler = (_ patterns : [Any]) -> Void
@@ -72,7 +81,17 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         if let cellSelected = cellSelected {
             let row = cellSelected.item
             if let vc = segue.destination as? GridEditorViewController {
-                vc.grid = tableData?.initializeEditor(row)
+                vc.editorEngine.grid = (tableData?.initializeEditor(row))!
+                vc.textClosure = { configTitle in
+                    let newRow = Config(json: ["title" : configTitle,
+                                               "contents" : [[Int]]()])
+                    if self.tableData != nil {
+                        self.tableData?.gridPatterns[row] = newRow
+                        self.tableView.reloadData()
+                    }
+                    self.tableData?[cellSelected.item].title = configTitle
+                    self.tableView.reloadData()
+                }
             }
 //            showNewRowAlert(withMessage: "Enter Configuration Name")
         }
@@ -117,7 +136,7 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     
     @IBAction func gridSizeUpInside(_ sender: UISlider) {
         let size = Int(sender.value)
-        nc.post(name: name, object: nil, userInfo: ["gridSize" : size])
+        nc.post(name: engineUpdate, object: nil, userInfo: ["gridSize" : size])
     }
     
     // Set Refresh rate

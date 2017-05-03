@@ -22,17 +22,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-
-        if let recoveredData = defaults.data(forKey: "savedData") {
-            guard let json = try? JSONSerialization.jsonObject(with: recoveredData,
-                                                               options: .allowFragments) else { return false }
-            
-            let jsonDictionary = json as! [ String : [[Int]]]
-            let userData = Config(json: jsonDictionary)
-            print("jsonDictionary:  \(jsonDictionary)")
-            engine.grid = userData.initializeGrid(userData, engine.grid.size.rows)
-        }
         
+        // **********************************************************
+        // **********************************************************
+        // Remove UserDefaults for testing. Remove before submission.
+//        if let bundle = Bundle.main.bundleIdentifier {
+//            UserDefaults.standard.removePersistentDomain(forName: bundle)
+//        }
+        // **********************************************************
+        // **********************************************************
+
+        guard let recoveredData = defaults.data(forKey: "savedData"),
+            let json = try? JSONSerialization.jsonObject(with: recoveredData, options: .allowFragments) else { return true }
+        let recoveredSize = defaults.integer(forKey: "savedSize")
+        let jsonDictionary = json as! [ String : [[Int]]]
+        let userData = Config(json: jsonDictionary)
+        engine.grid = userData.initializeGrid(userData, recoveredSize)
         return true
     }
 

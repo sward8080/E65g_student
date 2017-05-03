@@ -26,9 +26,9 @@ import Foundation
     
     override func draw(_ rect: CGRect) {
         
-        guard let engine = engine else { return }
-        let grid = engine.grid
-        size = grid.size.rows
+        guard let engine = self.engine else { return }
+//        let grid = engine.grid
+        size = engine.grid.size.rows
         let base = rect.origin
         let viewWidth = rect.size.width
         let viewHeight = rect.size.height
@@ -57,8 +57,8 @@ import Foundation
                     size: circleSize
                 )
                 let cellPath = UIBezierPath(ovalIn: subRect)
-//                switch engine.grid[i, j] {
-                switch grid[i, j] {
+                switch engine.grid[i, j] {
+//                switch grid[i, j] {
                 case .alive: livingColor.setFill()
                 case .empty: emptyColor.setFill()
                 case .born: bornColor.setFill()
@@ -127,7 +127,7 @@ import Foundation
     var cellLastTouched: GridPosition?
     func process(touches: Set<UITouch>) -> GridPosition? {
         
-        guard let engine = engine else { return nil }
+        guard let engine = self.engine else { return nil }
         // If multitouch, return nil
         guard touches.count == 1 else { return nil }
         let pos = convert(touch: touches.first!)
@@ -141,8 +141,7 @@ import Foundation
         guard pos.row < size && pos.col < size &&
             pos.row >= 0 && pos.col >= 0 else { return pos }
 
-        engine.grid[(pos.col, pos.row)] =
-            engine.grid[(pos.col, pos.row)].isAlive ? .empty : .alive
+        engine.grid[(pos.col, pos.row)] = engine.grid[(pos.col, pos.row)].isAlive ? .empty : .alive
         engine.grid.updateSavedState([pos.col, pos.row])
         engine.delegate?.engineDidUpdate(withGrid: engine.grid)
         nc.post(name: cellUpdate, object: nil, userInfo: nil)

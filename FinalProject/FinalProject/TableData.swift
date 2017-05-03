@@ -44,7 +44,7 @@ struct TableData {
         case 16...20: return 25
         case 21...30: return 40
         case 31...40: return 50
-        case 41...60: return 75
+        case 41...60: return 60
         default: return 20
         }
     }

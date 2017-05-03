@@ -22,23 +22,25 @@ class SimulationViewController: UIViewController, EngineDelegate {
     let cellUpdate = Notification.Name(rawValue: "CellUpdate")
     var userData : [ String : [[Int]]]?
     var engine : StandardEngine = StandardEngine.engine
+    var savedEditorGrid : GridProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        engine.delegate = self
-        gridView.engine = engine
-        gridView.setNeedsDisplay()
         nc.addObserver(
             forName: engineUpdate,
             object: nil,
             queue: nil) { (n) in
-                guard let update = n.userInfo!["gridSize"] else { return }
-                let newSize = update as! Int
-                self.engine.grid = Grid(newSize, newSize)
-                self.gridView.setNeedsDisplay()
+                if let update = n.userInfo!["gridSize"] {
+                    let newSize = update as! Int
+                    self.engine.grid = Grid(newSize, newSize)
+                    self.gridView.setNeedsDisplay()
+                }
         }
+        engine.delegate = self
+        gridView.engine = engine
+        gridView.setNeedsDisplay()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -87,12 +89,13 @@ class SimulationViewController: UIViewController, EngineDelegate {
     @IBAction func save(_ sender: UIButton) {
         UserDefaults.resetStandardUserDefaults()
         let savedSimConfig = engine.grid.savedState
+        let savedSize = engine.grid.size.rows
         print(JSONSerialization.isValidJSONObject(savedSimConfig))
         guard let savedData = try? JSONSerialization.data(withJSONObject: savedSimConfig) else {
             return
         }
-        print(savedData)
         defaults.set(savedData, forKey: "savedData")
+        defaults.set(savedSize, forKey: "savedSize")
     }
     
 }
