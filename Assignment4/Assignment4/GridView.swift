@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Foundation
 
 @IBDesignable class GridView: UIView {
     
@@ -16,15 +17,18 @@ import UIKit
     @IBInspectable var bornColor: UIColor = UIColor.green
     @IBInspectable var diedColor: UIColor = UIColor.black
     @IBInspectable var gridColor: UIColor = UIColor.purple
-    @IBInspectable var gridWidth: CGFloat = 4.0
+    @IBInspectable var gridWidth: CGFloat = 0.3
     
     let nc = NotificationCenter.default
-    let name = Notification.Name(rawValue: "EngineUpdate")
+    let cellUpdate = Notification.Name(rawValue: "CellUpdate")
     
-    var engine: StandardEngine = StandardEngine.engine
+    var engine : StandardEngine?
     
     override func draw(_ rect: CGRect) {
-        size = engine.grid.size.rows
+        
+        guard let engine = engine else { return }
+        let grid = engine.grid
+        size = grid.size.rows
         let base = rect.origin
         let viewWidth = rect.size.width
         let viewHeight = rect.size.height
@@ -53,7 +57,8 @@ import UIKit
                     size: circleSize
                 )
                 let cellPath = UIBezierPath(ovalIn: subRect)
-                switch engine.grid[i, j] {
+//                switch engine.grid[i, j] {
+                switch grid[i, j] {
                 case .alive: livingColor.setFill()
                 case .empty: emptyColor.setFill()
                 case .born: bornColor.setFill()
@@ -121,7 +126,8 @@ import UIKit
     
     var cellLastTouched: GridPosition?
     func process(touches: Set<UITouch>) -> GridPosition? {
-
+        
+        guard let engine = engine else { return nil }
         // If multitouch, return nil
         guard touches.count == 1 else { return nil }
         let pos = convert(touch: touches.first!)
@@ -134,15 +140,12 @@ import UIKit
         // Prevent touches from wrapping around grid
         guard pos.row < size && pos.col < size &&
             pos.row >= 0 && pos.col >= 0 else { return pos }
-        
-        // Toggle cellState of cell touched
+
         engine.grid[(pos.col, pos.row)] =
             engine.grid[(pos.col, pos.row)].isAlive ? .empty : .alive
+        engine.grid.updateSavedState([pos.col, pos.row])
         engine.delegate?.engineDidUpdate(withGrid: engine.grid)
-        let n = Notification(name: name,
-                             object: nil,
-                             userInfo: ["engine" : engine])
-        nc.post(n)
+        nc.post(name: cellUpdate, object: nil, userInfo: nil)
         return pos
     }
     

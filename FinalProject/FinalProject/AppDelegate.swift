@@ -15,9 +15,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var gridState : GridProtocol?
     let nc = NotificationCenter.default
     let name = Notification.Name(rawValue: "EngineUpdate")
+    var savedData : Data?
+    var userData : Config?
+    let defaults = UserDefaults.standard
+    var engine = StandardEngine.engine
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+
+        if let recoveredData = defaults.data(forKey: "savedData") {
+            guard let json = try? JSONSerialization.jsonObject(with: recoveredData,
+                                                               options: .allowFragments) else { return false }
+            
+            let jsonDictionary = json as! [ String : [[Int]]]
+            let userData = Config(json: jsonDictionary)
+            print("jsonDictionary:  \(jsonDictionary)")
+            engine.grid = userData.initializeGrid(userData, engine.grid.size.rows)
+        }
+        
         return true
     }
 

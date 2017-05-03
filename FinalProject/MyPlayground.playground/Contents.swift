@@ -2,32 +2,19 @@
 
 import UIKit
 
-var completionHandlers: [() -> Void] = []
-func someFunctionWithEscapingClosure(completionHandler: @escaping () -> Void) {
-    completionHandlers.append(completionHandler)
-}
+var test = [
+    [11, 11],
+    [12, 11],
+    [11, 12],
+    [12, 12],
+    [13, 12],
+    [11, 13],
+    [12, 13]
+]
 
-func someFunctionWithNonescapingClosure(closure: () -> Void) {
-    closure()
-}
+var result = test.flatMap { arr in arr.max() }.max()
 
-class SomeClass {
-    var x = 10
-    func doSomething() {
-        someFunctionWithEscapingClosure { self.x = 100 }
-        someFunctionWithNonescapingClosure { x = 200 }
-    }
-}
+print(result)
 
-let instance = SomeClass()
 
-print(instance.x)
-instance.doSomething()
-print(instance.x)
-// Prints "200"
-
-//completionHandlers.first?()
-//print(instance.x)
-// Prints "100
-
-completionHandlers.count
+test.joined()

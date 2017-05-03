@@ -59,7 +59,6 @@ class Fetcher: NSObject, URLSessionDelegate {
             }
             sema.signal()
             completion(.success(data))
-            print("success")
         }
         task.resume()
         sema.wait()
@@ -77,7 +76,6 @@ class Fetcher: NSObject, URLSessionDelegate {
                     return completion(nil, "Could not parse JSON")
                 }
                 completion(json, nil)
-                print("in fetch closure !")
             }
         }
     }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Foundation
 
 class SimulationViewController: UIViewController, EngineDelegate {
     
@@ -14,22 +15,26 @@ class SimulationViewController: UIViewController, EngineDelegate {
     @IBOutlet weak var startTapped: UIButton!
     @IBOutlet weak var stopTapped: UIButton!
     @IBOutlet weak var gridView: GridView!
+    
+    let defaults = UserDefaults.standard
     let nc = NotificationCenter.default
-    let name = Notification.Name(rawValue: "EngineUpdate")
+    let engineUpdate = Notification.Name(rawValue: "EngineUpdate")
+    let cellUpdate = Notification.Name(rawValue: "CellUpdate")
+    var userData : [ String : [[Int]]]?
     var engine : StandardEngine = StandardEngine.engine
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        engine = StandardEngine.engine
         engine.delegate = self
+        gridView.engine = engine
         gridView.setNeedsDisplay()
         nc.addObserver(
-            forName: name,
+            forName: engineUpdate,
             object: nil,
             queue: nil) { (n) in
-                guard let update = n.userInfo!["engine"] else { return }
-                self.engine = update as! StandardEngine
-                self.gridView.size = self.engine.grid.size.rows
+                guard let update = n.userInfo!["gridSize"] else { return }
+                let newSize = update as! Int
+                self.engine.grid = Grid(newSize, newSize)
                 self.gridView.setNeedsDisplay()
         }
     }
@@ -41,18 +46,14 @@ class SimulationViewController: UIViewController, EngineDelegate {
     
     // Delegate function
     func engineDidUpdate(withGrid: GridProtocol) {
-        gridView.size = withGrid.size.rows
         self.gridView.setNeedsDisplay()
+        nc.post(name: cellUpdate, object: nil, userInfo: nil)
     }
     
     // Get next iteration of grid when "step" button tapped
     @IBAction func stepTapped(_ sender: UIButton) {
         engine.grid = engine.step()
-        let n = Notification(name: name,
-                             object: nil,
-                             userInfo: ["engine" : engine])
-        engine.countGridStates()
-        nc.post(n)
+        engineDidUpdate(withGrid: engine.grid)
     }
     
     // Start refresh of grid based on user provided refresh rate
@@ -67,6 +68,7 @@ class SimulationViewController: UIViewController, EngineDelegate {
                 repeats: true
             ) { (t: Timer) in
                 _ = self.engine.step()
+                self.engineDidUpdate(withGrid: self.engine.grid)
             }
         } else {
             engine.refreshTimer?.invalidate()
@@ -81,4 +83,16 @@ class SimulationViewController: UIViewController, EngineDelegate {
             engine.refreshTimer = nil
         }
     }
+    
+    @IBAction func save(_ sender: UIButton) {
+        UserDefaults.resetStandardUserDefaults()
+        let savedSimConfig = engine.grid.savedState
+        print(JSONSerialization.isValidJSONObject(savedSimConfig))
+        guard let savedData = try? JSONSerialization.data(withJSONObject: savedSimConfig) else {
+            return
+        }
+        print(savedData)
+        defaults.set(savedData, forKey: "savedData")
+    }
+    
 }

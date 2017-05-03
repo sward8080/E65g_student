@@ -24,6 +24,8 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     var refreshTimeInSeconds = 0.0
     let classURL = URL(string: "https://dl.dropboxusercontent.com/u/7544475/S65g.json")!
     var configurations : [Any]!
+    var tableData : TableData?
+    var numUserConfigs = 0
     
     // ---------------------------------------------------------------------------------
 
@@ -31,8 +33,8 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         super.viewDidLoad()
         getData(url: classURL) { items in
             self.configurations = items
+            self.tableData = TableData(jsonArray: items)
         }
-        print("configurations count: \(configurations)")
         rowsLabel.text = "Rows: \(Int(engine.grid.size.rows))"
         colsLabel.text = "Columns: \(Int(engine.grid.size.cols))"
         refreshTextField.text = "1 Hz"
@@ -40,6 +42,7 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     typealias GetJSONCompletionHandler = (_ patterns : [Any]) -> Void
+    
     func getData(url: URL, completion: @escaping GetJSONCompletionHandler) {
         Fetcher().fetchJSON(url: url) { (json: Any?, message: String?) in
             guard message == nil else {
@@ -50,8 +53,8 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
                 print("no json")
                 return
             }
-            let array = json as! [Any]
-            completion(array)
+            let jsonArray = json as! [Any]
+            completion(jsonArray)
         }
     }
     
@@ -64,34 +67,45 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     override func viewWillAppear(_ animated: Bool) {
     }
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        let cellSelected = tableView.indexPathForSelectedRow
-//        if let cellSelected = cellSelected {
-//            
-//        }
-//    }
-//   
-    
-    @IBAction func addRow(_ sender: UIButton) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let cellSelected = tableView.indexPathForSelectedRow
+        if let cellSelected = cellSelected {
+            let row = cellSelected.item
+            if let vc = segue.destination as? GridEditorViewController {
+                vc.grid = tableData?.initializeEditor(row)
+            }
+//            showNewRowAlert(withMessage: "Enter Configuration Name")
+        }
     }
+   
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return configurations.count
+        guard let tableData = tableData else { return 0 }
+        return tableData.gridPatterns.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "basic"
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         let label = cell.contentView.subviews.first as! UILabel
-        let jsonDictionary = configurations[indexPath.item] as! [String : Any ]
-        label.text = jsonDictionary["title"] as? String
+        guard let tableData = tableData else { label.text = "No Data to Display"; return cell }
+        label.text = tableData[indexPath.item].title
         return cell
     }
     
+    @IBAction func addRow(_ sender: UIButton) {
+        numUserConfigs += 1
+        let newRow = Config(json: ["title" : "User Configuration \(numUserConfigs)",
+                                    "contents" : [[Int]]()])
+        if tableData != nil {
+            tableData!.gridPatterns = [newRow] + tableData!.gridPatterns
+            tableView.reloadData()
+        }
+    }
    
     @IBAction func gridSizeChanged(_ sender: UISlider) {
         rowsLabel.text = "Rows: \(Int(sender.value))"
@@ -102,8 +116,8 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     @IBAction func gridSizeUpInside(_ sender: UISlider) {
-        let val = Int(sender.value)
-        engine.grid = Grid(val, val)
+        let size = Int(sender.value)
+        nc.post(name: name, object: nil, userInfo: ["gridSize" : size])
     }
     
     // Set Refresh rate
@@ -112,12 +126,10 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     @IBAction func editingChanged(_ sender: UITextField) {
-        print("editing changed")
     }
     
     // Check for numeric entry in text field. Borrowed from Van's code in lecture 9
     @IBAction func editingEnded(_ sender: UITextField) {
-        print("editing ended")
         guard let text = sender.text else { return }
         guard let val = Double(text) else {
             showErrorAlert(withMessage: "Invalid Value: \(text), Please Try Again.") {
@@ -128,12 +140,6 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         refreshTimeInSeconds = val
         engine.refreshRate = 1 / refreshTimeInSeconds
         refreshTextField.text = "\(Int(val)) Hz"
-        print("engine refreshRate: \(engine.refreshRate)")
-        engine.delegate?.engineDidUpdate(withGrid: engine.grid)
-        let n = Notification(name: name,
-                             object: nil,
-                             userInfo: ["engine" : engine])
-        nc.post(n)
     }
     
     // Create "Done" button and toolbar for number pad keyboard
@@ -192,6 +198,24 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         }
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func showNewRowAlert(withMessage msg: String) {
+        let newRowPopUp = UIAlertController(
+            title: "Configuration Name",
+            message: "Enter Configuration Name",
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            newRowPopUp.dismiss(animated: true) { }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            newRowPopUp.dismiss(animated: true) { }
+        }
+        newRowPopUp.addTextField()
+        newRowPopUp.addAction(okAction)
+        newRowPopUp.addAction(cancelAction)
+        self.present(newRowPopUp, animated: true, completion: nil)
     }
 }
 

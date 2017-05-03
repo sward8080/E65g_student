@@ -24,8 +24,9 @@ public protocol GridProtocol {
     init(_ rows: Int, _ cols: Int, cellInitializer: (GridPosition) -> CellState)
     var description: String { get }
     var size: GridSize { get }
+    var savedState : [ String : [[Int]]] { get set }
     subscript (row: Int, col: Int) -> CellState { get set }
-    func next() -> Self 
+    func next() -> Self
 }
 
 public let lazyPositions = { (size: GridSize) in
@@ -42,6 +43,23 @@ let offsets: [GridPosition] = [
     (row:  0, col:  -1),                     (row:  0, col:  1),
     (row:  1, col:  -1), (row:  1, col:  0), (row:  1, col:  1)
 ]
+
+// Added to save grid state and update Statistics View
+extension GridProtocol {
+    
+    public mutating func updateSavedState(_ cell: [Int]) {
+    
+        let cellState = self[cell[0], cell[1]]
+    
+        switch cellState {
+        case .born: savedState["born"]?.append(cell)
+        case .alive: savedState["alive"]?.append(cell)
+        case .died: savedState["died"]?.append(cell)
+        default: break
+        }
+    }
+
+}
 
 extension GridProtocol {
     public var description: String {
@@ -66,7 +84,13 @@ extension GridProtocol {
     
     public func next() -> Self {
         var nextGrid = Self(size.rows, size.cols) { _, _ in .empty }
-        lazyPositions(self.size).forEach { nextGrid[$0.row, $0.col] = self.nextState(of: $0) }
+        lazyPositions(self.size).forEach {
+            nextGrid[$0.row, $0.col] = self.nextState(of: $0)
+            switch nextGrid[$0.row, $0.col] {
+                case .born, .alive, .died: nextGrid.updateSavedState([$0.row, $0.col])
+                default: break
+            }
+        }
         return nextGrid
     }
 }
@@ -74,6 +98,11 @@ extension GridProtocol {
 public struct Grid: GridProtocol {
     private var _cells: [[CellState]]
     public let size: GridSize
+    public var savedState = [ "born" : [[Int]](),
+                              "alive" : [[Int]](),
+                              "died" : [[Int]](),
+//                              "empty" : [[Int]]()
+                            ]
 
     public subscript (row: Int, col: Int) -> CellState {
         get { return _cells[norm(row, to: size.rows)][norm(col, to: size.cols)] }
@@ -83,7 +112,8 @@ public struct Grid: GridProtocol {
     public init(_ rows: Int, _ cols: Int, cellInitializer: (GridPosition) -> CellState = { _, _ in .empty }) {
         _cells = [[CellState]](repeatElement( [CellState](repeatElement(.empty, count: rows)), count: cols))
         size = GridSize(rows, cols)
-        lazyPositions(self.size).forEach { self[$0.row, $0.col] = cellInitializer($0) }
+        lazyPositions(self.size).forEach {
+            self[$0.row, $0.col] = cellInitializer($0) }
     }
 }
 
@@ -154,8 +184,6 @@ public protocol EngineProtocol {
     var delegate: EngineDelegate? { get set }
     var grid: GridProtocol { get }
     var refreshRate: Double { get set }
-    
-    // TIMER NOT SPECIFIED OPTIONAL IN ASSIGNMENT. CHANGE AFTER TESTING /////
     var refreshTimer: Timer? { get set }
     var rows: Int { get set }
     var cols: Int { get set }
@@ -184,51 +212,9 @@ public class StandardEngine: EngineProtocol {
     public var rows: Int = 10
     public var cols: Int = 10
     
-    // Instance variables for counts of CellState
-    // displayed on StatisticsView
-    public var numAlive: Int = 0
-    public var numEmpty: Int = 0
-    public var numBorn: Int = 0
-    public var numDied: Int = 0
-    
-    public func resetStateCount() {
-        numAlive = 0
-        numEmpty = 0
-        numBorn = 0
-        numDied = 0
-    }
-    
-    // Loop to count CellStates for StatisticsView
-    public func countGridStates() {
-        (0 ..< rows).forEach { i in
-            (0 ..< cols).forEach { j in
-                switch grid[i, j] {
-                case .alive: numAlive = numAlive + 1
-                case .empty: numEmpty = numEmpty + 1
-                case .born: numBorn = numBorn + 1
-                case .died: numDied = numDied + 1
-                }
-            }
-        }
-    }
-    
-    public func setPoints( _ points: [( Int, Int, CellState )] ) {
-        grid = Grid(rows, cols)
-        for (row, col, state) in points {
-            grid[row, col] = state
-        }
-    }
-    
     public func step() -> GridProtocol {
         self.grid = grid.next()
         delegate?.engineDidUpdate(withGrid: grid)
-        let nc = NotificationCenter.default
-        let name = Notification.Name(rawValue: "EngineUpdate")
-        let n = Notification(name: name,
-                             object: nil,
-                             userInfo: ["engine" : self])
-        countGridStates()
-        nc.post(n)
         return grid
     }
     
@@ -237,12 +223,5 @@ public class StandardEngine: EngineProtocol {
         self.cols = cols
         self.grid = Grid(rows, cols)
         delegate?.engineDidUpdate(withGrid: grid)
-        let nc = NotificationCenter.default
-        let name = Notification.Name(rawValue: "EngineUpdate")
-        let n = Notification(name: name,
-                             object: nil,
-                             userInfo: ["engine" : self])
-        countGridStates()
-        nc.post(n)
     }
 }

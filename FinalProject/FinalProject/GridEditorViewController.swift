@@ -8,27 +8,31 @@
 
 import UIKit
 
-class GridEditorViewController: UIViewController {
+class GridEditorViewController: UIViewController, EngineDelegate {
     
-    @IBOutlet weak var gridEditor: GridView!
+    @IBOutlet weak var gridEditorView: GridView!
     
     let nc = NotificationCenter.default
-    let name = Notification.Name(rawValue: "EngineUpdate")
-    var editorEngine : StandardEngine = StandardEngine(10, 10)
+    let engineUpdate = Notification.Name(rawValue: "EngineUpdate")
+    var saveClosure: ((Config) -> Void)?
+    var editorEngine = StandardEngine(10, 10)
+    var grid : GridProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        gridEditor.setNeedsDisplay()
+        editorEngine.delegate = self
+        if let grid = grid { editorEngine.grid = grid }
+        gridEditorView.engine = editorEngine
+        gridEditorView.setNeedsDisplay()
         nc.addObserver(
-            forName: name,
+            forName: engineUpdate,
             object: nil,
             queue: nil) { (n) in
-                guard let update = n.userInfo!["engine"] else { return }
-                self.editorEngine = update as! StandardEngine
-                self.gridEditor.size = self.editorEngine.grid.size.rows
-                self.gridEditor.setNeedsDisplay()
+                guard let update = n.userInfo!["gridSize"] else { return }
+                let newSize = update as! Int
+                self.editorEngine.grid = Grid(newSize, newSize)
+                self.gridEditorView.setNeedsDisplay()
         }
-        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
@@ -36,23 +40,20 @@ class GridEditorViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+    }
+    
+    func engineDidUpdate(withGrid: GridProtocol) {
+        self.gridEditorView.setNeedsDisplay()
+    }
+
+    
     @IBAction func save(_ sender: UIButton) {
-        let n = Notification(name: name,
-                             object: nil,
-                             userInfo: ["engine" : editorEngine])
-        editorEngine.countGridStates()
-        nc.post(n)
+        let savedEditorConfig = Config(json: editorEngine.grid.savedState)
+        if let saveClosure = saveClosure {
+            saveClosure(savedEditorConfig)
+        }
         navigationController?.popViewController(animated: true)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

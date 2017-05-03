@@ -19,8 +19,7 @@
 		29B1929D1EA5C63400A8525B /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B192971EA5C63400A8525B /* StatisticsViewController.swift */; };
 		29B1929E1EA5C63400A8525B /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B192981EA5C63400A8525B /* StatisticsView.swift */; };
 		29DCC24A1EAEF9670096FAB3 /* Fetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DCC2491EAEF9670096FAB3 /* Fetcher.swift */; };
-		29DCC24C1EB0D0C60096FAB3 /* ConwayConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DCC24B1EB0D0C60096FAB3 /* ConwayConfig.swift */; };
-		29DCC24E1EB0DEF40096FAB3 /* Configs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DCC24D1EB0DEF40096FAB3 /* Configs.swift */; };
+		29DCC24E1EB0DEF40096FAB3 /* TableData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DCC24D1EB0DEF40096FAB3 /* TableData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,8 +37,7 @@
 		29B192971EA5C63400A8525B /* StatisticsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatisticsViewController.swift; path = ../../Assignment4/Assignment4/StatisticsViewController.swift; sourceTree = "<group>"; };
 		29B192981EA5C63400A8525B /* StatisticsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatisticsView.swift; path = ../../Assignment4/Assignment4/StatisticsView.swift; sourceTree = "<group>"; };
 		29DCC2491EAEF9670096FAB3 /* Fetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fetcher.swift; sourceTree = "<group>"; };
-		29DCC24B1EB0D0C60096FAB3 /* ConwayConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConwayConfig.swift; sourceTree = "<group>"; };
-		29DCC24D1EB0DEF40096FAB3 /* Configs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configs.swift; sourceTree = "<group>"; };
+		29DCC24D1EB0DEF40096FAB3 /* TableData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +74,7 @@
 				29B192931EA5C63400A8525B /* Grid.swift */,
 				29B192941EA5C63400A8525B /* GridView.swift */,
 				29B192951EA5C63400A8525B /* InstrumentationViewController.swift */,
-				29DCC24B1EB0D0C60096FAB3 /* ConwayConfig.swift */,
-				29DCC24D1EB0DEF40096FAB3 /* Configs.swift */,
+				29DCC24D1EB0DEF40096FAB3 /* TableData.swift */,
 				29DCC2491EAEF9670096FAB3 /* Fetcher.swift */,
 				29B192961EA5C63400A8525B /* SimulationViewController.swift */,
 				29B192971EA5C63400A8525B /* StatisticsViewController.swift */,
@@ -166,7 +163,6 @@
 			files = (
 				29B192801EA5C5E600A8525B /* AppDelegate.swift in Sources */,
 				29B1929D1EA5C63400A8525B /* StatisticsViewController.swift in Sources */,
-				29DCC24C1EB0D0C60096FAB3 /* ConwayConfig.swift in Sources */,
 				29B1929E1EA5C63400A8525B /* StatisticsView.swift in Sources */,
 				2938F34B1EAAE3270036A1EB /* GridEditorViewController.swift in Sources */,
 				29B1929B1EA5C63400A8525B /* InstrumentationViewController.swift in Sources */,
@@ -174,7 +170,7 @@
 				29B1929A1EA5C63400A8525B /* GridView.swift in Sources */,
 				29DCC24A1EAEF9670096FAB3 /* Fetcher.swift in Sources */,
 				29B192991EA5C63400A8525B /* Grid.swift in Sources */,
-				29DCC24E1EB0DEF40096FAB3 /* Configs.swift in Sources */,
+				29DCC24E1EB0DEF40096FAB3 /* TableData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

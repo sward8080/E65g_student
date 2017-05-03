@@ -17,7 +17,7 @@ class StatisticsViewController: UIViewController {
     @IBOutlet weak var cellsDied: UILabel!
     
     let nc = NotificationCenter.default
-    let name = Notification.Name(rawValue: "EngineUpdate")
+    let cellUpdate = Notification.Name(rawValue: "CellUpdate")
     
     var engine : StandardEngine = StandardEngine.engine
     
@@ -26,14 +26,14 @@ class StatisticsViewController: UIViewController {
         // Update value of cellStates displayed on first load
         super.viewDidLoad()
         setFields()
-        
+        statView.setNeedsDisplay()
         nc.addObserver(
-            forName: name,
+            forName: cellUpdate,
             object: nil,
             queue: nil) { (n) in
                 self.setFields()
+                self.statView.setNeedsDisplay()
         }
-        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,23 +41,16 @@ class StatisticsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
     func setFields() {
-        engine.resetStateCount()
-        engine.countGridStates()
-        cellsAlive.text = "# of Cells Alive: \(self.engine.numAlive)"
-        cellsEmpty.text = "# of Cells Empty: \(self.engine.numEmpty)"
-        cellsBorn.text = "# of Cells Born: \(self.engine.numBorn)"
-        cellsDied.text = "# of Cells Died: \(self.engine.numDied)"
+        let numAlive = engine.grid.savedState["alive"]!.count
+        let numBorn = engine.grid.savedState["born"]!.count
+        let numDied = engine.grid.savedState["died"]!.count
+        let numEmpty = (engine.grid.size.rows * engine.grid.size.cols)
+                        - numAlive - numBorn - numDied
+        
+        cellsAlive.text = "# of Cells Alive: \(numAlive)"
+        cellsEmpty.text = "# of Cells Empty: \(numEmpty)"
+        cellsBorn.text = "# of Cells Born: \(numBorn)"
+        cellsDied.text = "# of Cells Died: \(numDied)"
     }
 }
