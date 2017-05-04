@@ -21,11 +21,12 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     var engine : StandardEngine = StandardEngine.engine
     let nc = NotificationCenter.default
     let engineUpdate = Notification.Name(rawValue: "EngineUpdate")
+    let tableUpdate = Notification.Name(rawValue: "TableUpdate")
     var refreshTimeInSeconds = 0.0
     let classURL = URL(string: "https://dl.dropboxusercontent.com/u/7544475/S65g.json")!
     var configurations : [Any]!
     var tableData : TableData?
-    var numUserConfigs = 0
+    var numUserConfigs = 1
     
     // ---------------------------------------------------------------------------------
 
@@ -47,6 +48,18 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
                 let savedEditorGrid = update as! GridProtocol
                 self.engine.grid = savedEditorGrid
                 self.engine.delegate?.engineDidUpdate(withGrid: savedEditorGrid)
+        }
+        nc.addObserver(
+            forName: tableUpdate,
+            object: nil,
+            queue: nil) { (n) in
+                guard let update = n.userInfo!["config"],
+                    let size = n.userInfo!["size"] else { return }
+                var newConfig = update as! Config
+                newConfig.title = "User Configuration \(self.numUserConfigs)"
+                let gridSize = size as! Int
+                newConfig.size = gridSize
+                self.updateTable(withConfig: newConfig)
         }
     }
     
@@ -116,14 +129,19 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         return cell
     }
     
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+       
+    }
+    
     @IBAction func addRow(_ sender: UIButton) {
-        numUserConfigs += 1
+        
         let newRow = Config(json: ["title" : "User Configuration \(numUserConfigs)",
                                     "contents" : [[Int]]()])
         if tableData != nil {
             tableData!.gridPatterns = [newRow] + tableData!.gridPatterns
             tableView.reloadData()
         }
+        numUserConfigs += 1
     }
    
     @IBAction func gridSizeChanged(_ sender: UISlider) {
@@ -167,8 +185,10 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         let doneToolbar: UIToolbar = UIToolbar(frame: toolbarFrame)
         doneToolbar.barStyle = UIBarStyle.default
         let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let done: UIBarButtonItem  = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.done, target: self, action: #selector(InstrumentationViewController.doneButtonAction))
-        
+        let done: UIBarButtonItem  = UIBarButtonItem(title: "Done",
+                                                     style: UIBarButtonItemStyle.done,
+                                                     target: self,
+                                                     action: #selector(InstrumentationViewController.doneButtonAction))
         var items = [UIBarButtonItem]()
         items.append(flexSpace)
         items.append(done)
@@ -202,6 +222,14 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
             }
             engine.refreshIsOn = false
         }
+    }
+    
+    func updateTable(withConfig: Config) {
+        if tableData != nil {
+            tableData!.gridPatterns = [withConfig] + tableData!.gridPatterns
+            tableView.reloadData()
+        }
+        numUserConfigs += 1
     }
     
     //MARK: AlertController Handling

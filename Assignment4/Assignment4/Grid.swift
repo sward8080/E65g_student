@@ -100,8 +100,7 @@ public struct Grid: GridProtocol {
     public let size: GridSize
     public var savedState = [ "born" : [[Int]](),
                               "alive" : [[Int]](),
-                              "died" : [[Int]](),
-//                              "empty" : [[Int]]()
+                              "died" : [[Int]]()
                             ]
 
     public subscript (row: Int, col: Int) -> CellState {

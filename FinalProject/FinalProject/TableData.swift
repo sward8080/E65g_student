@@ -10,7 +10,7 @@ import UIKit
 
 let classURL = URL(string: "https://dl.dropboxusercontent.com/u/7544475/S65g.json")
 
-struct TableData {
+public struct TableData {
     
     var gridPatterns: [Config] = [Config]()
     var count : Int = 0
@@ -30,10 +30,14 @@ struct TableData {
     }
     
     func initializeEditor(_ config: Int) -> GridProtocol {
+        let newGrid : GridProtocol!
         let gridConfig = self[config].alive
         guard !gridConfig.isEmpty else { return Grid(10, 10) }
-        let max : Int = gridConfig.joined().max()!
-        var newGrid = Grid(newGridSize(max), newGridSize(max))
+        if let size = self[config].size { newGrid = Grid(size, size) }
+        else {
+            let size = newGridSize(gridConfig.joined().max()!)
+            newGrid = Grid(size, size)
+        }
         gridConfig.forEach { newGrid[$0[0], $0[1]] = .alive }
         return newGrid
     }
@@ -50,12 +54,13 @@ struct TableData {
     }
 }
 
-struct Config {
+public struct Config {
     
     var title : String = "Configuration"
     var alive : [[Int]] = [[Int]]()
     var born : [[Int]] = [[Int]]()
     var died : [[Int]] = [[Int]]()
+    var size : Int?
 }
 
 extension Config {
@@ -69,14 +74,12 @@ extension Config {
     }
     
     init(json: [String : [[Int]]]) {
-        let alive = json["alive"]
-        let born = json["born"]
-        let died = json["died"]
-        //        print("contents maxGridLocation: \(contents.joined().max())")
-        
-        self.alive = alive!
-        self.born = born!
-        self.died = died!
+        guard let alive = json["alive"],
+            let born = json["born"],
+            let died = json["died"] else { return }
+        self.alive = alive
+        self.born = born
+        self.died = died
     }
     
     func initializeGrid(_ config: Config, _ size: Int) -> GridProtocol {

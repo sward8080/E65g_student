@@ -45,11 +45,11 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        showNewRowAlert(withMessage: "Enter Configuration Name") { (textField) in
-            if let textClosure = self.textClosure {
-                textClosure(textField)
-            }
-        }
+//        showNewRowAlert(withMessage: "Enter Configuration Name") { (textField) in
+//            if let textClosure = self.textClosure {
+//                textClosure(textField)
+//            }
+//        }
     }
     
     func engineDidUpdate(withGrid: GridProtocol) {
@@ -59,7 +59,17 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
 
     
     @IBAction func save(_ sender: UIButton) {
+        showNewRowAlert(withMessage: "Enter Configuration Name") { (textField) in
+            if let textClosure = self.textClosure {
+                textClosure(textField)
+            }
+        }
+        let savedState = editorEngine.grid.savedState
+        let savedSize = editorEngine.grid.size.rows
+        let newRow = Config(json: savedState)
+        let tableUpdate = Notification.Name(rawValue: "TableUpdate")
         nc.post(name: engineUpdate, object: nil, userInfo: ["grid" : editorEngine.grid])
+        nc.post(name: tableUpdate, object: nil, userInfo: ["config" : newRow, "size" : savedSize])
         
 //        if let saveClosure = saveClosure {
 //            saveClosure(savedEditorConfig)
@@ -68,7 +78,6 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
 //        let textClosure = textClosure {
 //            textClosure(newValue)
 //        }
-        navigationController?.popViewController(animated: true)
     }
     
     //MARK: AlertController Handling
@@ -82,10 +91,12 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
             let textField = newRowPopUp.textFields![0]
             guard let configName = textField.text else { return }
             completion(configName)
-            newRowPopUp.dismiss(animated: true) { }
+            newRowPopUp.dismiss(animated: true) {}
+            self.navigationController?.popViewController(animated: true)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
             newRowPopUp.dismiss(animated: true) { }
+            self.navigationController?.popViewController(animated: true)
         }
         newRowPopUp.addTextField { (textField) in
             textField.placeholder = "Enter New Configuration Name"

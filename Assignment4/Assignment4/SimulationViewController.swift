@@ -86,16 +86,18 @@ class SimulationViewController: UIViewController, EngineDelegate {
         }
     }
     
+    
     @IBAction func save(_ sender: UIButton) {
         UserDefaults.resetStandardUserDefaults()
-        let savedSimConfig = engine.grid.savedState
+        let savedState = engine.grid.savedState
         let savedSize = engine.grid.size.rows
-        print(JSONSerialization.isValidJSONObject(savedSimConfig))
-        guard let savedData = try? JSONSerialization.data(withJSONObject: savedSimConfig) else {
-            return
-        }
+        guard let savedData = try? JSONSerialization.data(withJSONObject: savedState) else { return }
         defaults.set(savedData, forKey: "savedData")
         defaults.set(savedSize, forKey: "savedSize")
+        
+        let newRow = Config(json: savedState)
+        let tableUpdate = Notification.Name(rawValue: "TableUpdate")
+        nc.post(name: tableUpdate, object: nil, userInfo: ["config" : newRow, "size" : savedSize])
     }
     
 }
