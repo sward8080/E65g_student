@@ -15,7 +15,7 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
     let nc = NotificationCenter.default
     let engineUpdate = Notification.Name(rawValue: "EngineUpdate")
     var saveClosure: ((Config) -> Void)?
-    var textClosure: ((String) -> Void)?
+    var textClosure: ((String, Int, [String : [[Int]]]) -> Void)?
     var editorEngine = StandardEngine(10, 10)
     var grid : GridProtocol?
 
@@ -59,29 +59,24 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
 
     
     @IBAction func save(_ sender: UIButton) {
-        showNewRowAlert(withMessage: "Enter Configuration Name") { (textField) in
+        showConfigNameAlert(withMessage: "Enter Configuration Name") { (textField) in
             if let textClosure = self.textClosure {
-                textClosure(textField)
+                let state = self.editorEngine.grid.savedState
+                let size = self.editorEngine.grid.size.rows
+                textClosure(textField, size, state)
             }
         }
-        let savedState = editorEngine.grid.savedState
-        let savedSize = editorEngine.grid.size.rows
-        let newRow = Config(json: savedState)
-        let tableUpdate = Notification.Name(rawValue: "TableUpdate")
         nc.post(name: engineUpdate, object: nil, userInfo: ["grid" : editorEngine.grid])
-        nc.post(name: tableUpdate, object: nil, userInfo: ["config" : newRow, "size" : savedSize])
-        
-//        if let saveClosure = saveClosure {
-//            saveClosure(savedEditorConfig)
-//        }
-//        if let newValue = configurationTextField.text,
-//        let textClosure = textClosure {
-//            textClosure(newValue)
-//        }
     }
-    
+//        let savedState = editorEngine.grid.savedState
+//        let savedSize = editorEngine.grid.size.rows
+//        let newRow = Config(json: savedState)
+//        let tableUpdate = Notification.Name(rawValue: "TableUpdate")
+        
+//        nc.post(name: tableUpdate, object: nil, userInfo: ["config" : newRow, "size" : savedSize])
+
     //MARK: AlertController Handling
-    func showNewRowAlert(withMessage msg: String, completion: @escaping (String) -> Void) {
+    func showConfigNameAlert(withMessage msg: String, completion: @escaping (String) -> Void) {
         let newRowPopUp = UIAlertController(
             title: "Configuration",
             message: nil,

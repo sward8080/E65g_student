@@ -10,10 +10,8 @@ import UIKit
 
 class InstrumentationViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
-    @IBOutlet weak var rowsLabel: UILabel!
-    @IBOutlet weak var rowsSlider: UISlider!
-    @IBOutlet weak var colsLabel: UILabel!
-    @IBOutlet weak var colsSlider: UISlider!
+    @IBOutlet weak var gridSize: UILabel!
+    @IBOutlet weak var gridSizeSlider: UISlider!
     @IBOutlet weak var refreshTextField: UITextField!
     @IBOutlet weak var toggleSwitch: UISwitch!
     @IBOutlet weak var tableView: UITableView!
@@ -36,8 +34,8 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
             self.configurations = items
             self.tableData = TableData(jsonArray: items)
         }
-        rowsLabel.text = "Rows: \(Int(engine.grid.size.rows))"
-        colsLabel.text = "Columns: \(Int(engine.grid.size.cols))"
+        gridSize.text = "Size: \(engine.grid.size.rows)"
+        gridSizeSlider.value = Float(engine.grid.size.rows)
         refreshTextField.text = "1 Hz"
         addDoneButtonToKeyboard()
         nc.addObserver(
@@ -49,18 +47,18 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
                 self.engine.grid = savedEditorGrid
                 self.engine.delegate?.engineDidUpdate(withGrid: savedEditorGrid)
         }
-        nc.addObserver(
-            forName: tableUpdate,
-            object: nil,
-            queue: nil) { (n) in
-                guard let update = n.userInfo!["config"],
-                    let size = n.userInfo!["size"] else { return }
-                var newConfig = update as! Config
-                newConfig.title = "User Configuration \(self.numUserConfigs)"
-                let gridSize = size as! Int
-                newConfig.size = gridSize
-                self.updateTable(withConfig: newConfig)
-        }
+//        nc.addObserver(
+//            forName: tableUpdate,
+//            object: nil,
+//            queue: nil) { (n) in
+//                guard let update = n.userInfo!["config"],
+//                    let size = n.userInfo!["size"] else { return }
+//                var newConfig = update as! Config
+//                newConfig.title = "User Configuration \(self.numUserConfigs)"
+//                let gridSize = size as! Int
+//                newConfig.size = gridSize
+//                self.updateTable(withConfig: newConfig)
+//        }
     }
     
     typealias GetJSONCompletionHandler = (_ patterns : [Any]) -> Void
@@ -94,19 +92,16 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         if let cellSelected = cellSelected {
             let row = cellSelected.item
             if let vc = segue.destination as? GridEditorViewController {
-                vc.editorEngine.grid = (tableData?.initializeEditor(row))!
-                vc.textClosure = { configTitle in
-                    let newRow = Config(json: ["title" : configTitle,
-                                               "contents" : [[Int]]()])
+                vc.editorEngine.grid = (tableData?.initializeEditor(row: row))!
+                vc.textClosure = { configTitle, configSize, configState in
+                    var currentRow = Config(json: configState, title: configTitle)
+                    currentRow.size = configSize
                     if self.tableData != nil {
-                        self.tableData?.gridPatterns[row] = newRow
+                        self.tableData?.gridPatterns[row] = currentRow
                         self.tableView.reloadData()
                     }
-                    self.tableData?[cellSelected.item].title = configTitle
-                    self.tableView.reloadData()
                 }
             }
-//            showNewRowAlert(withMessage: "Enter Configuration Name")
         }
     }
    
@@ -133,6 +128,8 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
        
     }
     
+    // Create new row. Adds new "Config" object to data model array with
+    // name of numbered "Configuration" and Grid of size 10.
     @IBAction func addRow(_ sender: UIButton) {
         
         let newRow = Config(json: ["title" : "User Configuration \(numUserConfigs)",
@@ -145,11 +142,7 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     }
    
     @IBAction func gridSizeChanged(_ sender: UISlider) {
-        rowsLabel.text = "Rows: \(Int(sender.value))"
-        colsLabel.text = "Cols: \(Int(sender.value))"
-        if sender == rowsSlider {
-            colsSlider.value = sender.value
-        } else { rowsSlider.value = sender.value }
+        gridSize.text = "Size: \(Int(sender.value))"
     }
     
     @IBAction func gridSizeUpInside(_ sender: UISlider) {
@@ -245,24 +238,6 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         }
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
-    }
-    
-    func showNewRowAlert(withMessage msg: String) {
-        let newRowPopUp = UIAlertController(
-            title: "Configuration Name",
-            message: "Enter Configuration Name",
-            preferredStyle: .alert
-        )
-        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-            newRowPopUp.dismiss(animated: true) { }
-        }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
-            newRowPopUp.dismiss(animated: true) { }
-        }
-        newRowPopUp.addTextField()
-        newRowPopUp.addAction(okAction)
-        newRowPopUp.addAction(cancelAction)
-        self.present(newRowPopUp, animated: true, completion: nil)
     }
 }
 

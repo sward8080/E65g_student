@@ -29,16 +29,17 @@ public struct TableData {
         }
     }
     
-    func initializeEditor(_ config: Int) -> GridProtocol {
-        let newGrid : GridProtocol!
+    func initializeEditor(row config: Int) -> GridProtocol {
+        var newGrid : GridProtocol!
         let gridConfig = self[config].alive
         guard !gridConfig.isEmpty else { return Grid(10, 10) }
-        if let size = self[config].size { newGrid = Grid(size, size) }
-        else {
-            let size = newGridSize(gridConfig.joined().max()!)
+        
+        let size = self[config].size ?? newGridSize(gridConfig.joined().max()!)
             newGrid = Grid(size, size)
+            gridConfig.forEach {
+            newGrid[$0[0], $0[1]] = .alive
+            newGrid.updateSavedState([$0[0], $0[1]])
         }
-        gridConfig.forEach { newGrid[$0[0], $0[1]] = .alive }
         return newGrid
     }
     
@@ -61,16 +62,13 @@ public struct Config {
     var born : [[Int]] = [[Int]]()
     var died : [[Int]] = [[Int]]()
     var size : Int?
+    
 }
 
 extension Config {
     init(json: [String : Any]) {
-        let title = json["title"] as! String
-        let alive = json["contents"] as! [[Int]]
-//        print("contents maxGridLocation: \(contents.joined().max())")
-        
-        self.title = title
-        self.alive = alive
+        title = json["title"] as! String
+        alive = json["contents"] as! [[Int]]
     }
     
     init(json: [String : [[Int]]]) {
@@ -80,6 +78,16 @@ extension Config {
         self.alive = alive
         self.born = born
         self.died = died
+    }
+    
+    init(json: [String : [[Int]]], title: String) {
+        guard let alive = json["alive"],
+            let born = json["born"],
+            let died = json["died"] else { return }
+        self.alive = alive
+        self.born = born
+        self.died = died
+        self.title = title
     }
     
     func initializeGrid(_ config: Config, _ size: Int) -> GridProtocol {
