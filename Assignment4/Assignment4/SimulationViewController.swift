@@ -86,6 +86,11 @@ class SimulationViewController: UIViewController, EngineDelegate {
         }
     }
     
+    @IBAction func reset(_ sender: UIButton) {
+        let size = engine.grid.size.rows
+        engine.grid = Grid(size, size)
+        engineDidUpdate(withGrid: engine.grid)
+    }
     
     @IBAction func save(_ sender: UIButton) {
         UserDefaults.resetStandardUserDefaults()
