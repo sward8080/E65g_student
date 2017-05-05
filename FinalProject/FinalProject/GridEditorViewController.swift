@@ -33,6 +33,7 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
                 self.editorEngine.grid = Grid(newSize, newSize)
                 self.gridEditorView.setNeedsDisplay()
         }
+        
     }
     
     func engineDidUpdate(withGrid: GridProtocol) {

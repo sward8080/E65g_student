@@ -41,6 +41,12 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
             forName: engineUpdate,
             object: nil,
             queue: nil) { (n) in
+                if let update = n.userInfo!["simSave"] {
+                    let newRow = update as! Config
+                    guard self.tableData != nil else { return }
+                        self.tableData!.gridPatterns = [newRow] + self.tableData!.gridPatterns
+                        self.tableView.reloadData()
+                }
                 guard let update = n.userInfo!["grid"] else { return }
                 let savedEditorGrid = update as! GridProtocol
                 self.engine.grid = savedEditorGrid
@@ -75,7 +81,7 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         if let cellSelected = cellSelected {
             let row = cellSelected.item
             if let vc = segue.destination as? GridEditorViewController {
-                vc.editorEngine.grid = (tableData?.initializeEditor(row: row))!
+                vc.editorEngine.grid = (tableData?.initializeEditor(configAt: row))!
                 vc.textClosure = { configTitle, configSize, configState in
                     var currentRow = Config(json: configState, title: configTitle)
                     currentRow.size = configSize
@@ -121,8 +127,9 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     // name of numbered "Configuration" and Grid of size 10.
     @IBAction func addRow(_ sender: UIButton) {
         
-        let newRow = Config(json: ["title" : "User Configuration \(numUserConfigs)",
+        var newRow = Config(json: ["title" : "User Configuration \(numUserConfigs)",
                                     "contents" : [[Int]]()])
+        newRow.size = Int(gridSizeSlider.value)
         if tableData != nil {
             tableData!.gridPatterns = [newRow] + tableData!.gridPatterns
             tableView.reloadData()

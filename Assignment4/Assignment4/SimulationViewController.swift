@@ -28,11 +28,10 @@ class SimulationViewController: UIViewController, EngineDelegate {
             forName: engineUpdate,
             object: nil,
             queue: nil) { (n) in
-                if let update = n.userInfo!["gridSize"] {
-                    let newSize = update as! Int
-                    self.engine.grid = Grid(newSize, newSize)
-                    self.gridView.setNeedsDisplay()
-                }
+                guard let update = n.userInfo!["gridSize"] else { return }
+                let newSize = update as! Int
+                self.engine.grid = Grid(newSize, newSize)
+                self.gridView.setNeedsDisplay()
         }
         engine.delegate = self
         gridView.engine = engine
@@ -99,6 +98,36 @@ class SimulationViewController: UIViewController, EngineDelegate {
         guard let savedData = try? JSONSerialization.data(withJSONObject: savedState) else { return }
         defaults.set(savedData, forKey: "savedData")
         defaults.set(savedSize, forKey: "savedSize")
+        showConfigNameAlert(withMessage: "Enter Configuration Name") { (textField) in
+            var newRow = Config(json: savedState, title: textField)
+            newRow.size = savedSize
+            self.nc.post(name: self.engineUpdate, object: nil, userInfo: ["simSave" : newRow])
+        }
+    }
+    
+    func showConfigNameAlert(withMessage msg: String, completion: @escaping (String) -> Void) {
+        let newRowPopUp = UIAlertController(
+            title: "Configuration",
+            message: nil,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            let textField = newRowPopUp.textFields![0]
+            guard let configName = textField.text else { return }
+            completion(configName)
+            newRowPopUp.dismiss(animated: true) {}
+            self.navigationController?.popViewController(animated: true)
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            newRowPopUp.dismiss(animated: true) { }
+            self.navigationController?.popViewController(animated: true)
+        }
+        newRowPopUp.addTextField { (textField) in
+            textField.placeholder = "Enter New Configuration Name"
+        }
+        newRowPopUp.addAction(okAction)
+        newRowPopUp.addAction(cancelAction)
+        self.present(newRowPopUp, animated: true, completion: nil)
     }
     
 }

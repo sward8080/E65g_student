@@ -202,6 +202,21 @@
                                             <userDefinedRuntimeAttribute type="number" keyPath="gridWidth">
                                                 <real key="value" value="0.29999999999999999"/>
                                             </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="livingColor">
+                                                <color key="value" red="0.0" green="1" blue="0.0" alpha="0.6015625" colorSpace="calibratedRGB"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="bornColor">
+                                                <color key="value" red="0.0" green="0.0" blue="1" alpha="0.79513591610000001" colorSpace="calibratedRGB"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="emptyColor">
+                                                <color key="value" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="diedColor">
+                                                <color key="value" white="0.33333333329999998" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="gridColor">
+                                                <color key="value" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                            </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                 </subviews>
@@ -469,6 +484,12 @@
                                 </constraints>
                                 <variation key="default">
                                     <mask key="constraints">
+                                        <exclude reference="VrH-Sq-pT6"/>
+                                        <exclude reference="jNB-SJ-eLU"/>
+                                        <exclude reference="oKm-bo-ZLW"/>
+                                        <exclude reference="pbQ-Xx-Wzy"/>
+                                        <exclude reference="vSS-JD-cxT"/>
+                                        <exclude reference="ObO-vn-XrQ"/>
                                         <exclude reference="6Iy-rS-BrS"/>
                                         <exclude reference="7lx-tp-cZM"/>
                                         <exclude reference="Fvz-MN-QjT"/>
@@ -476,33 +497,27 @@
                                         <exclude reference="cQj-HF-AUL"/>
                                         <exclude reference="fdp-e6-2jR"/>
                                         <exclude reference="rS4-uF-abZ"/>
-                                        <exclude reference="ObO-vn-XrQ"/>
-                                        <exclude reference="VrH-Sq-pT6"/>
-                                        <exclude reference="jNB-SJ-eLU"/>
-                                        <exclude reference="oKm-bo-ZLW"/>
-                                        <exclude reference="pbQ-Xx-Wzy"/>
-                                        <exclude reference="vSS-JD-cxT"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=compact">
                                     <mask key="constraints">
+                                        <include reference="jNB-SJ-eLU"/>
+                                        <include reference="pbQ-Xx-Wzy"/>
+                                        <include reference="vSS-JD-cxT"/>
                                         <include reference="6Iy-rS-BrS"/>
                                         <exclude reference="7lx-tp-cZM"/>
                                         <include reference="IIV-iv-1a9"/>
                                         <include reference="cQj-HF-AUL"/>
                                         <exclude reference="fdp-e6-2jR"/>
-                                        <include reference="jNB-SJ-eLU"/>
-                                        <include reference="pbQ-Xx-Wzy"/>
-                                        <include reference="vSS-JD-cxT"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular">
                                     <mask key="constraints">
-                                        <include reference="Fvz-MN-QjT"/>
-                                        <include reference="rS4-uF-abZ"/>
-                                        <include reference="ObO-vn-XrQ"/>
                                         <include reference="VrH-Sq-pT6"/>
                                         <include reference="oKm-bo-ZLW"/>
+                                        <include reference="ObO-vn-XrQ"/>
+                                        <include reference="Fvz-MN-QjT"/>
+                                        <include reference="rS4-uF-abZ"/>
                                     </mask>
                                 </variation>
                             </view>

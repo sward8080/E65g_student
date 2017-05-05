@@ -29,15 +29,25 @@ public struct TableData {
         }
     }
     
-    func initializeEditor(row config: Int) -> GridProtocol {
+    func initializeEditor(configAt config: Int) -> GridProtocol {
         var newGrid : GridProtocol!
-        let gridConfig = self[config].alive
-        guard !gridConfig.isEmpty else { return Grid(10, 10) }
-        
-        let size = self[config].size ?? newGridSize(gridConfig.joined().max()!)
-            newGrid = Grid(size, size)
-            gridConfig.forEach {
+        let gridAlive = self[config].alive
+        let gridBorn = self[config].born
+        let gridDied = self[config].died
+//        let gridSize = self[config].size
+//        guard !gridAlive.isEmpty, gridSize != nil else { return Grid(10, 10) }
+        let size = self[config].size ?? newGridSize(gridAlive.joined().max()!)
+        newGrid = Grid(size, size)
+        gridAlive.forEach {
             newGrid[$0[0], $0[1]] = .alive
+            newGrid.updateSavedState([$0[0], $0[1]])
+        }
+        gridBorn.forEach {
+            newGrid[$0[0], $0[1]] = .born
+            newGrid.updateSavedState([$0[0], $0[1]])
+        }
+        gridDied.forEach {
+            newGrid[$0[0], $0[1]] = .died
             newGrid.updateSavedState([$0[0], $0[1]])
         }
         return newGrid
