@@ -2,8 +2,8 @@
 //  FetchConfigs.swift
 //  FinalProject
 //
-//  Created by Sean Ward on 4/24/17.
-//  Copyright © 2017 Sean Ward. All rights reserved.
+//  Created by Van Simmons
+//  Copyright © 2017 Van Simmons. All rights reserved.
 //
 
 import Foundation

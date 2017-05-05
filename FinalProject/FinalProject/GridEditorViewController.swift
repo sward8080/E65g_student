@@ -34,23 +34,6 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
                 self.gridEditorView.setNeedsDisplay()
         }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-//        showNewRowAlert(withMessage: "Enter Configuration Name") { (textField) in
-//            if let textClosure = self.textClosure {
-//                textClosure(textField)
-//            }
-//        }
-    }
     
     func engineDidUpdate(withGrid: GridProtocol) {
         editorEngine.grid = withGrid
@@ -68,12 +51,6 @@ class GridEditorViewController: UIViewController, EngineDelegate, UITextFieldDel
         }
         nc.post(name: engineUpdate, object: nil, userInfo: ["grid" : editorEngine.grid])
     }
-//        let savedState = editorEngine.grid.savedState
-//        let savedSize = editorEngine.grid.size.rows
-//        let newRow = Config(json: savedState)
-//        let tableUpdate = Notification.Name(rawValue: "TableUpdate")
-        
-//        nc.post(name: tableUpdate, object: nil, userInfo: ["config" : newRow, "size" : savedSize])
 
     //MARK: AlertController Handling
     func showConfigNameAlert(withMessage msg: String, completion: @escaping (String) -> Void) {

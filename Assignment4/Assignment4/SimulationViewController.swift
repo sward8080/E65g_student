@@ -20,9 +20,7 @@ class SimulationViewController: UIViewController, EngineDelegate {
     let nc = NotificationCenter.default
     let engineUpdate = Notification.Name(rawValue: "EngineUpdate")
     let cellUpdate = Notification.Name(rawValue: "CellUpdate")
-    var userData : [ String : [[Int]]]?
-    var engine : StandardEngine = StandardEngine.engine
-    var savedEditorGrid : GridProtocol?
+    var engine = StandardEngine.engine
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,12 +84,14 @@ class SimulationViewController: UIViewController, EngineDelegate {
         }
     }
     
+    // Reset SimulationViewController grid
     @IBAction func reset(_ sender: UIButton) {
         let size = engine.grid.size.rows
         engine.grid = Grid(size, size)
         engineDidUpdate(withGrid: engine.grid)
     }
     
+    // Save SimulationViewController grid state to memory (JSON format)
     @IBAction func save(_ sender: UIButton) {
         UserDefaults.resetStandardUserDefaults()
         let savedState = engine.grid.savedState
@@ -99,10 +99,6 @@ class SimulationViewController: UIViewController, EngineDelegate {
         guard let savedData = try? JSONSerialization.data(withJSONObject: savedState) else { return }
         defaults.set(savedData, forKey: "savedData")
         defaults.set(savedSize, forKey: "savedSize")
-        
-        let newRow = Config(json: savedState)
-        let tableUpdate = Notification.Name(rawValue: "TableUpdate")
-        nc.post(name: tableUpdate, object: nil, userInfo: ["config" : newRow, "size" : savedSize])
     }
     
 }

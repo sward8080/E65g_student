@@ -10,7 +10,7 @@ import UIKit
 
 class StatisticsViewController: UIViewController {
 
-    @IBOutlet weak var statView: StatisticsView!
+//    @IBOutlet weak var statView: StatisticsView!
     @IBOutlet weak var cellsAlive: UILabel!
     @IBOutlet weak var cellsEmpty: UILabel!
     @IBOutlet weak var cellsBorn: UILabel!
@@ -26,13 +26,13 @@ class StatisticsViewController: UIViewController {
         // Update value of cellStates displayed on first load
         super.viewDidLoad()
         setFields()
-        statView.setNeedsDisplay()
+//        statView.setNeedsDisplay()
         nc.addObserver(
             forName: cellUpdate,
             object: nil,
             queue: nil) { (n) in
                 self.setFields()
-                self.statView.setNeedsDisplay()
+//                self.statView.setNeedsDisplay()
         }
     }
 
@@ -41,6 +41,7 @@ class StatisticsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // Update CellState data fields
     func setFields() {
         let numAlive = engine.grid.savedState["alive"]!.count
         let numBorn = engine.grid.savedState["born"]!.count

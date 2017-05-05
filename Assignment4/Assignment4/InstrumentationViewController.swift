@@ -19,7 +19,6 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
     var engine : StandardEngine = StandardEngine.engine
     let nc = NotificationCenter.default
     let engineUpdate = Notification.Name(rawValue: "EngineUpdate")
-    let tableUpdate = Notification.Name(rawValue: "TableUpdate")
     var refreshTimeInSeconds = 0.0
     let classURL = URL(string: "https://dl.dropboxusercontent.com/u/7544475/S65g.json")!
     var configurations : [Any]!
@@ -47,22 +46,10 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
                 self.engine.grid = savedEditorGrid
                 self.engine.delegate?.engineDidUpdate(withGrid: savedEditorGrid)
         }
-//        nc.addObserver(
-//            forName: tableUpdate,
-//            object: nil,
-//            queue: nil) { (n) in
-//                guard let update = n.userInfo!["config"],
-//                    let size = n.userInfo!["size"] else { return }
-//                var newConfig = update as! Config
-//                newConfig.title = "User Configuration \(self.numUserConfigs)"
-//                let gridSize = size as! Int
-//                newConfig.size = gridSize
-//                self.updateTable(withConfig: newConfig)
-//        }
     }
     
+    // Retrieve data from JSON array
     typealias GetJSONCompletionHandler = (_ patterns : [Any]) -> Void
-    
     func getData(url: URL, completion: @escaping GetJSONCompletionHandler) {
         Fetcher().fetchJSON(url: url) { (json: Any?, message: String?) in
             guard message == nil else {
@@ -82,10 +69,6 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         super.didReceiveMemoryWarning()
     }
     
-    
-    
-    override func viewWillAppear(_ animated: Bool) {
-    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let cellSelected = tableView.indexPathForSelectedRow
@@ -124,8 +107,14 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         return cell
     }
     
+    // Delete Row functionality
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-       
+        if editingStyle == .delete {
+            tableData?.gridPatterns.remove(at: indexPath.item)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        } else {
+            print("nope")
+        }
     }
     
     // Create new row. Adds new "Config" object to data model array with
@@ -141,6 +130,7 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         numUserConfigs += 1
     }
    
+    // Increase/Decrease Grid Size
     @IBAction func gridSizeChanged(_ sender: UISlider) {
         gridSize.text = "Size: \(Int(sender.value))"
     }
@@ -217,6 +207,7 @@ class InstrumentationViewController: UIViewController, UITableViewDelegate, UITa
         }
     }
     
+    // Update tableView data with new row
     func updateTable(withConfig: Config) {
         if tableData != nil {
             tableData!.gridPatterns = [withConfig] + tableData!.gridPatterns

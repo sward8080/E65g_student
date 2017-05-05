@@ -17,7 +17,6 @@
 		29B1929B1EA5C63400A8525B /* InstrumentationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B192951EA5C63400A8525B /* InstrumentationViewController.swift */; };
 		29B1929C1EA5C63400A8525B /* SimulationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B192961EA5C63400A8525B /* SimulationViewController.swift */; };
 		29B1929D1EA5C63400A8525B /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B192971EA5C63400A8525B /* StatisticsViewController.swift */; };
-		29B1929E1EA5C63400A8525B /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B192981EA5C63400A8525B /* StatisticsView.swift */; };
 		29CB6CEF1EBB565C00B41138 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB6CEE1EBB565C00B41138 /* SettingsViewController.swift */; };
 		29DCC24A1EAEF9670096FAB3 /* Fetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DCC2491EAEF9670096FAB3 /* Fetcher.swift */; };
 		29DCC24E1EB0DEF40096FAB3 /* TableData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DCC24D1EB0DEF40096FAB3 /* TableData.swift */; };
@@ -36,7 +35,6 @@
 		29B192951EA5C63400A8525B /* InstrumentationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InstrumentationViewController.swift; path = ../../Assignment4/Assignment4/InstrumentationViewController.swift; sourceTree = "<group>"; };
 		29B192961EA5C63400A8525B /* SimulationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SimulationViewController.swift; path = ../../Assignment4/Assignment4/SimulationViewController.swift; sourceTree = "<group>"; };
 		29B192971EA5C63400A8525B /* StatisticsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatisticsViewController.swift; path = ../../Assignment4/Assignment4/StatisticsViewController.swift; sourceTree = "<group>"; };
-		29B192981EA5C63400A8525B /* StatisticsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatisticsView.swift; path = ../../Assignment4/Assignment4/StatisticsView.swift; sourceTree = "<group>"; };
 		29CB6CEE1EBB565C00B41138 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		29DCC2491EAEF9670096FAB3 /* Fetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fetcher.swift; sourceTree = "<group>"; };
 		29DCC24D1EB0DEF40096FAB3 /* TableData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableData.swift; sourceTree = "<group>"; };
@@ -80,7 +78,6 @@
 				29DCC2491EAEF9670096FAB3 /* Fetcher.swift */,
 				29B192961EA5C63400A8525B /* SimulationViewController.swift */,
 				29B192971EA5C63400A8525B /* StatisticsViewController.swift */,
-				29B192981EA5C63400A8525B /* StatisticsView.swift */,
 				29B1927F1EA5C5E600A8525B /* AppDelegate.swift */,
 				29B192851EA5C5E600A8525B /* Main.storyboard */,
 				29CB6CEE1EBB565C00B41138 /* SettingsViewController.swift */,
@@ -167,7 +164,6 @@
 				29B192801EA5C5E600A8525B /* AppDelegate.swift in Sources */,
 				29B1929D1EA5C63400A8525B /* StatisticsViewController.swift in Sources */,
 				29CB6CEF1EBB565C00B41138 /* SettingsViewController.swift in Sources */,
-				29B1929E1EA5C63400A8525B /* StatisticsView.swift in Sources */,
 				2938F34B1EAAE3270036A1EB /* GridEditorViewController.swift in Sources */,
 				29B1929B1EA5C63400A8525B /* InstrumentationViewController.swift in Sources */,
 				29B1929C1EA5C63400A8525B /* SimulationViewController.swift in Sources */,
